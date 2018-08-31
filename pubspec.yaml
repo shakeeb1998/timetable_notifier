@@ -15,10 +15,7 @@ dependencies:
     git: https://github.com/Cretezy/flutter_cached_network_image.git
   validator:
     git: https://github.com/jodinathan/validator.dart
-
-
-
-
+  flutter_local_notifications: ^0.3.7
 
 dev_dependencies:
   flutter_test:

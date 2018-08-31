@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'Login.dart';
 import 'dart:convert';
@@ -38,7 +39,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   String photo2='https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350';
 
   String photo3='http://techblogcorner.com/wp-content/uploads/2014/09/jpeg.jpg';
-
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   FlutterSecureStorage storage=FlutterSecureStorage();
   @override
