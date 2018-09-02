@@ -1,25 +1,20 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 
-import 'package:path/path.dart';
-
-scheduleNotification(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async
+scheduleNotification() async
 {
 
-  var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'timetable channel id', 'timetable channel name', 'timetable channel description',
-      importance: Importance.Max,
-      priority: Priority.High,
-      icon: 'ic_launcher',
-      onlyAlertOnce: true);
-  var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-  var platformChannelSpecifics = new NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+  var initializationSettingsAndroid =
+    new AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initializationSettingsIOS = new IOSInitializationSettings();
+  var initializationSettings = new InitializationSettings(
+      initializationSettingsAndroid, initializationSettingsIOS);
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+  flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   FlutterSecureStorage flutterSecureStorage = new FlutterSecureStorage();
   String timetable = await flutterSecureStorage.read(key: 'timetable');
@@ -36,12 +31,28 @@ scheduleNotification(FlutterLocalNotificationsPlugin flutterLocalNotificationsPl
       int startTime = int.parse(timing.split('-')[0]);
       if (startTime < 8) startTime += 12;
 
-      print('In ' + room + " @ " + timing + " " + subject
+      String notificationTitle = 'In ' + room + " @ " + timing;
+      print(dayI);
+      print(startTime - 1);
 
-      await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
-          0, 'In ' + room + " @ " + timing, subject, new Day(dayI + 2),
-          new Time(startTime - 1, 50, 0), platformChannelSpecifics);
-
+      _showWeeklyAtDayAndTime(new Day(dayI + 2), new Time(startTime-1, 50, 0), notificationTitle, subject, flutterLocalNotificationsPlugin);
     }
   }
+}
+
+Future _showWeeklyAtDayAndTime(Day day, Time time, String title, String body, FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
+  var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+      'show weekly channel id',
+      'show weekly channel name',
+      'show weekly description');
+  var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+  var platformChannelSpecifics = new NotificationDetails(
+      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+  await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
+      0,
+      title,
+      body,
+      day,
+      time,
+      platformChannelSpecifics);
 }
