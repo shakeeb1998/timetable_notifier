@@ -36,7 +36,7 @@ scheduleNotification(FlutterLocalNotificationsPlugin flutterLocalNotificationsPl
       int startTime = int.parse(timing.split('-')[0]);
       if (startTime < 8) startTime += 12;
 
-      print('In ' + room + " @ " + timing + " " + subject
+      print('In ' + room + " @ " + timing + " " + subject);
 
       await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
           0, 'In ' + room + " @ " + timing, subject, new Day(dayI + 2),
