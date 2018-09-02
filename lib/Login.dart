@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import "package:http/http.dart" as http;
+import 'package:timetable_notifier/functions.dart';
 
 import 'TabHandler.dart';
 import 'notificationHelper.dart';
@@ -88,10 +89,6 @@ class _Login1State extends State<Login1> {
     );
   }
 
-  bool isValidEmail(String email) {
-    return isEmail(email);
-  }
-
   listener() {}
   submit() async {
     String email = controller.text;
@@ -99,6 +96,10 @@ class _Login1State extends State<Login1> {
       Scaffold
           .of(context1)
           .showSnackBar(new SnackBar(content: new Text("Invalid Email Address")));
+    } else if (! await isInternetWorking()) {
+      Scaffold
+          .of(context1)
+          .showSnackBar(new SnackBar(content: new Text("Needs Internet Connectivity")));
     } else {
       print('fetching');
       final response = await http.get(
@@ -114,22 +115,18 @@ class _Login1State extends State<Login1> {
         print('writing');
         String fStatus=await storage.read(key: "friendStatus");
 
-          if(fStatus==null)
-            {
-              await storage.write(key: 'friendStatus', value: '0');
-            //  await storage.write(key: 'freinds', value: '[{"a":"b"}]');
-            }
+        if(fStatus==null)
+        {
+          await storage.write(key: 'friendStatus', value: '0');
+          //  await storage.write(key: 'freinds', value: '[{"a":"b"}]');
+          }
 
-
-
-
-
-        await storage.write(key: 'status', value: '1');
-        await storage.write(key: 'timetable', value:response.body.toString() );
-        scheduleNotification();
-        print(responseJson);
-        Navigator.of(context).pushReplacement(
-            new MaterialPageRoute(builder: (BuildContext context) => new app(memes: memes,)));
+      await storage.write(key: 'status', value: '1');
+      await storage.write(key: 'timetable', value:response.body.toString() );
+      scheduleNotification();
+      print(responseJson);
+      Navigator.of(context).pushReplacement(
+          new MaterialPageRoute(builder: (BuildContext context) => new app(memes: memes,)));
       }
     }
   }
