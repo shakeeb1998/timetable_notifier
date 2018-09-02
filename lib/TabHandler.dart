@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -6,27 +8,44 @@ import 'dart:convert';
 import "package:http/http.dart" as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'friendFinder.dart';
+import 'package:observable/observable.dart';
+
 
 //Globals Variables
 
 class app extends StatelessWidget {
+  String memes;
+  app({this.memes})
+  {
+
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: app1(),);
+    return MaterialApp(home: app1(memes: memes,),);
   }
 }
 
 class app1 extends StatefulWidget {
+  String memes;
+  app1({this.memes})
+  {
+
+  }
   @override
-  _appState createState() => _appState();
+  _appState createState() => _appState(memes: memes);
 }
 
 class _appState extends State<app1>with SingleTickerProviderStateMixin {
-  CachedNetworkImageProvider tabImage;
-  CachedNetworkImageProvider image1;
-  CachedNetworkImageProvider image2;
-  CachedNetworkImageProvider image3;
+  String memes;
+  int a;
+  _appState({this.memes})
+  {
+
+  }
+  ObservableList observableList=new ObservableList(2);
+  ValueNotifier memeState;
+  bool SwitchVal;
   String CurrentTimeTable="Mine";
   String name='';
   String email='';
@@ -38,18 +57,27 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   var timeTable;
   BuildContext context1;
   TabController _tabController;
+  //DrawerController drawerController = new DrawerController(child: null, alignment: null)
   String photo1='https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg';
   String photo2='https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350';
 
   String photo3='http://techblogcorner.com/wp-content/uploads/2014/09/jpeg.jpg';
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-
   FlutterSecureStorage storage=FlutterSecureStorage();
   @override
   void initState() {
+      memeState=ValueNotifier(0);
     // TODO: implement initState
     super.initState();
+      if(memes=='1')
+        {
+          SwitchVal=true;
+        }
+        else
+          {
+            SwitchVal=false;
 
+          }
     _tabController = new TabController(vsync: this, length: 5);
     _tabController.addListener((){
       print("in controller");
@@ -85,6 +113,35 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
     setState(() {
       currTable='timetable';
     });
+  }
+  Future<bool> memesf(bool a)
+
+  async {
+    print('inFunc');
+  String val='';
+    if(a==true)
+      {
+        val='1';
+        await storage.write(key: 'memes', value: val);
+
+        //memeState.value('0');
+        memeState.value+=1;
+
+        //  memeState.notifyListeners();
+      }
+      else
+        {
+          val='0';
+          await storage.write(key: 'memes', value: val);
+          //memeState.value('1');
+          memeState.value+=1;
+        //  memeState.notifyListeners();
+
+        }
+        setState(() {
+          SwitchVal=a;
+        });
+
   }
 
   friends(BuildContext context)
@@ -125,6 +182,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   }
   @override
   Widget build(BuildContext context) {
+    print('memes  $memes');
     context1=context;
     return Scaffold(
       drawer: new Drawer(
@@ -156,7 +214,9 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                     new Divider(color: Colors.lightBlue,),
                     new ListTile(title:new Text("Remove"),onTap: ()=>remove(),),
                     new Divider(color: Colors.lightBlue,),
-                    new ListTile(title:new Text("Fetch"),onTap:()=>fetch())
+                    new ListTile(title:new Text("Fetch"),onTap:()=>fetch()),
+                    new Divider(color: Colors.lightBlue,),
+                    new ListTile(title:new Text("Memes"),onTap:null,trailing: new Switch(value: SwitchVal, onChanged:(v)=>memesf(v)),)
                   ],
                 );
 
@@ -175,14 +235,9 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
 
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
+              print("memesval $memes");
               return <Widget>[
-                SliverAppBar(
-                  title: new Text("Time Table"),
-                  expandedHeight: 200.0,
-                  floating: false,
-                  pinned: true,
-                  flexibleSpace: FlexSpace(tabController: _tabController,),
-                ),
+                (memes=='1')?FlexSpace(tabController: _tabController,memeState: memeState,hieght: 200.0,):FlexSpace(tabController: _tabController,memeState: memeState,hieght: 0.0,),
                 SliverPersistentHeader(
 
                   delegate: _SliverAppBarDelegate(
@@ -209,18 +264,14 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
             body: new FutureBuilder(
                 future:storage.read(key: currTable),
                 builder:(context,AsyncSnapshot<String>snapshot){
-                  image1= new CachedNetworkImageProvider(photo1) ;
-                  image2=new CachedNetworkImageProvider(photo2);
-                  image3=new CachedNetworkImageProvider(photo3);
 
-                  tabImage=image2;
                   if(snapshot.connectionState==ConnectionState.done)
                   {
 
                     var a=json.decode(snapshot.data);
                     timeTable=a;
-                    print('saad2');
-                    print(a);
+                   // print('saad2');
+                    //print(a);
                     return new TabBarView(
                       controller: _tabController,
                       children: <Widget>[
@@ -344,31 +395,52 @@ class _CarderState extends State<Carder> {
   }
   class FlexSpace extends StatefulWidget {
   TabController tabController;
-  FlexSpace({this.tabController});
+  String status;
+  var memeState;
+
+  FlexSpace({this.tabController,this.hieght,this.memeState});
+  double hieght;
+  //_FlexSpaceState flex=new _FlexSpaceState(tabController: tabController,hieght: hieght,status:status);
   @override
-    _FlexSpaceState createState() => _FlexSpaceState(tabController: tabController);
+    _FlexSpaceState createState() => _FlexSpaceState(tabController: tabController,hieght: hieght,memeStatus: memeState);
   }
 
   class _FlexSpaceState extends State<FlexSpace> {
-    CachedNetworkImageProvider tabImage;
+
+  CachedNetworkImageProvider tabImage;
     CachedNetworkImageProvider image1;
     CachedNetworkImageProvider image2;
     CachedNetworkImageProvider image3;
+    double hieght;
+    String status;
+    ValueNotifier memeStatus;
+    FlutterSecureStorage storage=FlutterSecureStorage();
     TabController tabController;
     String photo1='https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg';
     String photo2='https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350';
     String photo3='http://techblogcorner.com/wp-content/uploads/2014/09/jpeg.jpg';
-    _FlexSpaceState({this.tabController});
+    _FlexSpaceState({this.tabController,this.hieght,this.memeStatus}){
+      print('STatus');
+    }
 
     @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
-    image1= new CachedNetworkImageProvider(photo1) ;
-    image2=new CachedNetworkImageProvider(photo2);
-    image3=new CachedNetworkImageProvider(photo3);
-    tabImage=image2;
-
+      memeStatus.addListener(()async{
+        print('toggling');
+        String st=await storage.read(key: 'memes');
+        print('value for st $st');
+        if(st=='1')
+          {
+            setState(() {
+                hieght=200.0;
+            });
+          }
+          else{
+          setState(() {
+            hieght=0.0;
+          });
+        }
+      });
     tabController.addListener((){
 
 
@@ -377,21 +449,32 @@ class _CarderState extends State<Carder> {
       });
     });
     //String photo3='http://techblogcorner.com/wp-content/uploads/2014/09/jpeg.jpg';
+
+    // TODO: implement initState
+    super.initState();
+    image1= new CachedNetworkImageProvider(photo1) ;
+    image2=new CachedNetworkImageProvider(photo2);
+    image3=new CachedNetworkImageProvider(photo3);
+    tabImage=image2;
   }
   @override
     Widget build(BuildContext context) {
-      return FlexibleSpaceBar(
-          centerTitle: true,
-          /*title: Text("Timetable Notifier",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.0,
-                          ))*/
-          background:new FittedBox(
-            fit: BoxFit.cover,
-            child: (tabImage!=null)?new Image(image: tabImage):new Container(),
-          )//add Image here
-      );
+      print("height is $hieght");
+      return SliverAppBar(
+                        title: new Text("Time Table"),
+                        expandedHeight: hieght,
+                        floating: false,
+                        pinned: true,
+                        flexibleSpace: FlexibleSpaceBar(
+                          background: new FittedBox(
+                            fit: BoxFit.cover,
+                            child: (tabImage!=null)?new Image(image: tabImage):new Container(),
+                          ),
+                        ),
+                      );
+
+
+          //add Image here
     }
     photoChanger()
     {
@@ -416,3 +499,10 @@ class _CarderState extends State<Carder> {
     }
   }
 
+class CartObservable extends ValueNotifier<String> {
+  CartObservable(String value) : super(value);
+  void add(String product) {
+    value='';
+    notifyListeners();
+  }
+}

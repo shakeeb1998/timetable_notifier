@@ -9,22 +9,29 @@ import 'TabHandler.dart';
 import 'notificationHelper.dart';
 import 'package:validator/validator.dart';
 class Login extends StatelessWidget {
+ String memes="";
+  Login({this.memes});
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       home: new Scaffold(
-        body: new Login1(),
+        body: new Login1(memes: memes,),
       ),
     );
   }
 }
 
 class Login1 extends StatefulWidget {
+  String memes="";
+  Login1({this.memes});
   @override
-  _Login1State createState() => _Login1State();
+  _Login1State createState() => _Login1State(memes: memes);
 }
 
 class _Login1State extends State<Login1> {
+  String memes='';
+  _Login1State({this.memes});
   FlutterSecureStorage storage = new FlutterSecureStorage();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
@@ -115,12 +122,14 @@ class _Login1State extends State<Login1> {
 
 
 
+
+
         await storage.write(key: 'status', value: '1');
         await storage.write(key: 'timetable', value:response.body.toString() );
         scheduleNotification();
         print(responseJson);
         Navigator.of(context).pushReplacement(
-            new MaterialPageRoute(builder: (BuildContext context) => new app()));
+            new MaterialPageRoute(builder: (BuildContext context) => new app(memes: memes,)));
       }
     }
   }

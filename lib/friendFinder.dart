@@ -251,6 +251,7 @@ class _listState extends State<list> {
       snapshot.data.remove('0');
       snapshot.data.remove('timetable');
       snapshot.data.remove('friends');
+      snapshot.data.remove('memes');
       int x=int.parse(snapshot.data["friendStatus"]);
       snapshot.data.remove('friendStatus');
 

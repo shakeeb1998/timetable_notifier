@@ -29,7 +29,7 @@ AnimationController _iconAnimationController;
     super.initState();
 
     _iconAnimationController = new AnimationController(
-        vsync: this, duration: new Duration(milliseconds: 2000));
+        vsync: this, duration: new Duration(milliseconds: 1500));
 
      _iconAnimation = new CurvedAnimation(
         parent: _iconAnimationController, curve: Curves.easeInOut);
@@ -137,9 +137,23 @@ class _dummyState extends State<dummy> {
     return new Timer(_duration, () => gotoOrder(context));
   }
 
-  gotoOrder(BuildContext context) {
-    Navigator.of(context).pushReplacement(
-        new MaterialPageRoute(builder: (BuildContext context) => new app()));
+  gotoOrder(BuildContext context) async {
+    FlutterSecureStorage storage=new FlutterSecureStorage();
+    String memes=await storage.read(key: "memes");
+    if(memes==null)
+    {
+      await storage.write(key: 'memes', value: "1");
+      Navigator.of(context).pushReplacement(
+
+          new MaterialPageRoute(builder: (BuildContext context) => new app(memes: '1')));
+    }
+    else
+      {
+        Navigator.of(context).pushReplacement(
+
+            new MaterialPageRoute(builder: (BuildContext context) => new app(memes: memes)));
+      }
+
   }
 
   @override
@@ -154,6 +168,8 @@ class dummy1 extends StatefulWidget {
 }
 
 class _dummy1State extends State<dummy1> {
+  FlutterSecureStorage storage= FlutterSecureStorage();
+
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -165,7 +181,12 @@ class _dummy1State extends State<dummy1> {
     return new Timer(_duration, () => gotoLogin(context));
   }
 
-  gotoLogin(BuildContext context) {
+  gotoLogin(BuildContext context) async {
+    String memes=await storage.read(key: "memes");
+    if(memes==null)
+    {
+      await storage.write(key: 'memes', value: "1");
+    }
     Navigator.of(context).pushReplacement(
         new MaterialPageRoute(builder: (BuildContext context) => new Login()
         ));
