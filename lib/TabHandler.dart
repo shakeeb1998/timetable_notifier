@@ -216,7 +216,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                     new Divider(color: Colors.lightBlue,),
                     new ListTile(title:new Text("Fetch"),onTap:()=>fetch()),
                     new Divider(color: Colors.lightBlue,),
-                    new ListTile(title:new Text("Memes"),onTap:null,trailing: new Switch(value: SwitchVal, onChanged:(v)=>memesf(v)),)
+                    new ListTile(title:new Text("Memes"),onTap:null,trailing: new Switcher(memeState: memeState,val: SwitchVal,),)
                   ],
                 );
 
@@ -499,10 +499,53 @@ class _CarderState extends State<Carder> {
     }
   }
 
-class CartObservable extends ValueNotifier<String> {
-  CartObservable(String value) : super(value);
-  void add(String product) {
-    value='';
-    notifyListeners();
+class Switcher extends StatefulWidget {
+  bool val;
+  ValueNotifier memeState;
+  Switcher({this.val,this.memeState});
+
+  @override
+  _SwitcherState createState() => _SwitcherState(val:val,memeState:memeState);
+}
+
+class _SwitcherState extends State<Switcher> {
+  bool val;
+  ValueNotifier memeState;
+  FlutterSecureStorage storage= new FlutterSecureStorage();
+
+  _SwitcherState({this.val,this.memeState});
+  @override
+  Widget build(BuildContext context) {
+    return Switch(onChanged:(a)=> memesf(a),value: val,);
   }
+  Future<bool> memesf(bool a)
+
+  async {
+    String val1;
+    print('inFunc');
+    if(a==true)
+    {
+      val1='1';
+      await storage.write(key: 'memes', value: val1);
+
+      //memeState.value('0');
+      memeState.value+=1;
+
+      //  memeState.notifyListeners();
+    }
+    else
+    {
+      val1='0';
+      await storage.write(key: 'memes', value: val1);
+      //memeState.value('1');
+      memeState.value+=1;
+      //  memeState.notifyListeners();
+
+    }
+    setState(() {
+      val=a;
+    });
+
+  }
+
 }
