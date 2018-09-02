@@ -5,10 +5,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import "package:http/http.dart" as http;
 import 'package:timetable_notifier/functions.dart';
-
 import 'TabHandler.dart';
 import 'notificationHelper.dart';
-import 'package:validator/validator.dart';
+
 class Login extends StatelessWidget {
  String memes="";
   Login({this.memes});
@@ -101,32 +100,39 @@ class _Login1State extends State<Login1> {
           .of(context1)
           .showSnackBar(new SnackBar(content: new Text("Needs Internet Connectivity")));
     } else {
-      print('fetching');
-      final response = await http.get(
-          "https://tt.saadismail.net/api/fetch.php?email=\"EMAIL_HERE\"".replaceAll("EMAIL_HERE", email));
-      var responseJson = json.decode(response.body.toString());
-      print('fetched');
+      try {
+        print('fetching');
+        final response = await http.get(
+            "https://tt.saadismail.net/api/fetch.php?email=\"EMAIL_HERE\"".replaceAll("EMAIL_HERE", email));
+        var responseJson = json.decode(response.body.toString());
+        print('fetched');
 
-      if (responseJson['success'] == null || responseJson['success'] == 0) {
-        Scaffold
-            .of(context1)
-            .showSnackBar(new SnackBar(content: new Text("Invalid User")));
-      } else {
-        print('writing');
-        String fStatus=await storage.read(key: "friendStatus");
+        if (responseJson['success'] == null || responseJson['success'] == 0) {
+          Scaffold
+              .of(context1)
+              .showSnackBar(new SnackBar(content: new Text("Invalid User")));
+        } else {
+          print('writing');
+          String fStatus=await storage.read(key: "friendStatus");
 
-        if(fStatus==null)
-        {
-          await storage.write(key: 'friendStatus', value: '0');
-          //  await storage.write(key: 'freinds', value: '[{"a":"b"}]');
+          if(fStatus==null)
+          {
+            await storage.write(key: 'friendStatus', value: '0');
+            //  await storage.write(key: 'freinds', value: '[{"a":"b"}]');
           }
 
-      await storage.write(key: 'status', value: '1');
-      await storage.write(key: 'timetable', value:response.body.toString() );
-      scheduleNotification();
-      print(responseJson);
-      Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (BuildContext context) => new app(memes: memes,)));
+          await storage.write(key: 'status', value: '1');
+          await storage.write(key: 'timetable', value:response.body.toString() );
+          scheduleNotification();
+          print(responseJson);
+          Navigator.of(context).pushReplacement(
+              new MaterialPageRoute(builder: (BuildContext context) => new app(memes: memes,)));
+        }
+      } catch (e) {
+        print(e);
+        Scaffold
+            .of(context1)
+            .showSnackBar(new SnackBar(content: new Text("Could not fetch timetable")));
       }
     }
   }
