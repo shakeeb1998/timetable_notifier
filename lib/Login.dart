@@ -1,6 +1,7 @@
 import "dart:convert";
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import "package:http/http.dart" as http;
 
@@ -25,6 +26,7 @@ class Login1 extends StatefulWidget {
 
 class _Login1State extends State<Login1> {
   FlutterSecureStorage storage = new FlutterSecureStorage();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   BuildContext context1;
   GlobalKey key = GlobalKey();
@@ -33,6 +35,16 @@ class _Login1State extends State<Login1> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+    var initializationSettingsAndroid =
+    new AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
     controller.addListener(() => listener());
   }
 
@@ -116,7 +128,7 @@ class _Login1State extends State<Login1> {
         await storage.write(key: 'timetable', value:response.body.toString() );
         print('writen');
 
-        scheduleNotification();
+        scheduleNotification(flutterLocalNotificationsPlugin);
         print(responseJson);
         Navigator.of(context).pushReplacement(
             new MaterialPageRoute(builder: (BuildContext context) => new app()));

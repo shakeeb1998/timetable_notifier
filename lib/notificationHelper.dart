@@ -1,57 +1,47 @@
-import 'dart:typed_data';
+
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:indexed_list_view/indexed_list_view.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert';
 
-scheduleNotification()
-async {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+import 'package:path/path.dart';
 
-  var initializationSettingsAndroid =
-  new AndroidInitializationSettings('app_icon');
-  var initializationSettingsIOS = new IOSInitializationSettings();
-  var initializationSettings = new InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
-  flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-  flutterLocalNotificationsPlugin.initialize(initializationSettings,);
-  var scheduledNotificationDateTime =
-  new DateTime.now().add(new Duration(seconds: 5));
-  var vibrationPattern = new Int64List(4);
-  vibrationPattern[0] = 0;
-  vibrationPattern[1] = 1000;
-  vibrationPattern[2] = 5000;
-  vibrationPattern[3] = 2000;
+scheduleNotification(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async
+{
 
   var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'your other channel id',
-      'your other channel name',
-      'your other channel description',
-      icon: 'secondary_icon',
-      sound: 'slow_spring_board',
-      largeIcon: 'app_icon',
-      largeIconBitmapSource: BitmapSource.Drawable,
-      vibrationPattern: vibrationPattern,
-      color: const Color.fromARGB(255, 255, 0, 0));
-  var iOSPlatformChannelSpecifics =
-  new IOSNotificationDetails(sound: "slow_spring_board.aiff");
+      'timetable channel id', 'timetable channel name', 'timetable channel description',
+      importance: Importance.Max,
+      priority: Priority.High,
+      icon: 'ic_launcher',
+      onlyAlertOnce: true);
+  var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
   var platformChannelSpecifics = new NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-  await flutterLocalNotificationsPlugin.schedule(
-      0,
-      'scheduled title',
-      'scheduled body',
-      scheduledNotificationDateTime,
-      platformChannelSpecifics);
-}
 
+  FlutterSecureStorage flutterSecureStorage = new FlutterSecureStorage();
+  String timetable = await flutterSecureStorage.read(key: 'timetable');
+  var jsonTT = json.decode(timetable);
 
-class shakku extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+  for (int dayI = 0; dayI < 5; dayI++) {
+    var classes = jsonTT[dayI.toString()];
 
-    return IndexedListView.builder(
-      
-    );
+    for (var dayClass in classes) {
+      String subject = dayClass['subject'].toString().trim();
+      String timing = dayClass['timing'].toString().trim();
+      String room = dayClass['room'].toString().trim();
+
+      int startTime = int.parse(timing.split('-')[0]);
+      if (startTime < 8) startTime += 12;
+
+      print('In ' + room + " @ " + timing + " " + subject
+
+      await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
+          0, 'In ' + room + " @ " + timing, subject, new Day(dayI + 2),
+          new Time(startTime - 1, 50, 0), platformChannelSpecifics);
+
+    }
   }
 }
