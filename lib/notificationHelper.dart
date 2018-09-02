@@ -6,7 +6,7 @@ scheduleNotification() async
 {
 
   var initializationSettingsAndroid =
-    new AndroidInitializationSettings('@mipmap/ic_launcher');
+      new AndroidInitializationSettings('@mipmap/ic_launcher');
   var initializationSettingsIOS = new IOSInitializationSettings();
   var initializationSettings = new InitializationSettings(
       initializationSettingsAndroid, initializationSettingsIOS);
