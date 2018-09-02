@@ -90,6 +90,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
     });
   }
   remove(){
+    cancelAllScheduledNotifications();
     storage.delete(key: 'status');
     Navigator.of(context).pushReplacement(
         new MaterialPageRoute(builder: (BuildContext context) => new Login()
@@ -127,20 +128,23 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
     }
   }
 
-  fetch()
-  async {
-    String email=timeTable['email'].toString();
-    final response = await http.get(
-        "https://tt.saadismail.net/api/fetch.php?email=%22$email%22");
-    var responseJson = json.decode(response.body.toString());
-    print('saad   ${response.body.toString()}');
-    await storage.write(key: "timetable", value: response.body.toString());
-    setState(() {
-      //
-      timeTable=responseJson;
-    });
-    Navigator.of(context).pop();
-
+  fetch() async {
+    if (! await isInternetWorking()) {
+      Scaffold
+          .of(context)
+          .showSnackBar(new SnackBar(content: new Text("Needs internet connectivity")));
+    } else {
+      String email=timeTable['email'].toString();
+      final response = await http.get(
+          "https://tt.saadismail.net/api/fetch.php?email=%22$email%22");
+      var responseJson = json.decode(response.body.toString());
+      print('saad   ${response.body.toString()}');
+      await storage.write(key: "timetable", value: response.body.toString());
+      setState(() {
+        timeTable=responseJson;
+      });
+      Navigator.of(context).pop();
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -325,7 +329,7 @@ class _CarderState extends State<Carder> {
       itemCount: (day == null) ? 0 : day.length,
       itemBuilder: (context,index){
         return new Card(
-          color: new Color(hexToInt("FF" + day[index]['color'])),
+          color: new Color(int.parse(day[index]['color'])),
           child:new Column(
             children: <Widget>[
               new Row(

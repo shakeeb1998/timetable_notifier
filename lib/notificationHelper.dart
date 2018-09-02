@@ -39,8 +39,6 @@ scheduleNotification() async
       if (startTime < 8) startTime += 12;
 
       String notificationTitle = 'In ' + room + " @ " + timing;
-      print(dayI);
-      print(startTime - 1);
 
       await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(notificationId,
           notificationTitle, subject, new Day(dayI + 2),
