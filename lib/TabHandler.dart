@@ -4,7 +4,7 @@ import 'Login.dart';
 import 'dart:convert';
 import "package:http/http.dart" as http;
 import 'package:cached_network_image/cached_network_image.dart';
-
+import 'freindFinder.dart';
 
 //Globals Variables
 
@@ -26,13 +26,16 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   CachedNetworkImageProvider image1;
   CachedNetworkImageProvider image2;
   CachedNetworkImageProvider image3;
-
+  String CurrentTimeTable="Mine";
   String name='';
   String email='';
   String rollNo;
   String name1='';
   String email1='';
+  String currTable='timetable';
+  String freindsTable='';
   var timeTable;
+  BuildContext context1;
   TabController _tabController;
   String photo1='https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg';
   String photo2='https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350';
@@ -48,17 +51,15 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
 
     _tabController = new TabController(vsync: this, length: 5);
     _tabController.addListener((){
-      if(_tabController.indexIsChanging)
-        {
-         // print('heello');
-          photoChanger();
-        }
+      print("in controller");
+      photoChanger();
     });
 
   }
   photoChanger()
   {
-    
+    print("changing photoindex is");
+    print(_tabController.index);
     setState(() {
       if(_tabController.index==3)
         {
@@ -97,6 +98,27 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   {
 
   }
+  friends(BuildContext context)
+  async {
+    Navigator.of(context).pop();
+
+   var val=await  Navigator.push(
+     context,
+        new MaterialPageRoute(builder: (context) => new freindFinder()));
+   print('valis $val');
+   if(val ==null)
+     {
+            print('eeer');
+     }
+     else
+       {
+         print('setting new state');
+         setState(() {
+            currTable=val;
+         });
+       }
+       }
+
   fetch()
   async {
     String email=timeTable['email'].toString();
@@ -114,6 +136,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   }
   @override
   Widget build(BuildContext context) {
+    context1=context;
     return Scaffold(
       drawer: new Drawer(
         child:new FutureBuilder(
@@ -138,6 +161,10 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                     ),
                   //  new ListTile(title:new Text("Register"),onTap: ()=>register(),),
                     //new Divider(),
+                    new ListTile(title:new Text("My Time Table"),onTap: null,),
+                    new Divider(color: Colors.lightBlue,),
+                    new ListTile(title:new Text("Friends"),onTap: ()=>friends(context),),
+                    new Divider(color: Colors.lightBlue,),
                     new ListTile(title:new Text("Remove"),onTap: ()=>remove(),),
                     new Divider(color: Colors.lightBlue,),
                     new ListTile(title:new Text("Fetch"),onTap:()=>fetch())
@@ -156,6 +183,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
         ),
       ),
       body:  NestedScrollView(
+
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
               return <Widget>[
@@ -178,6 +206,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                       ),
                 ),
                 SliverPersistentHeader(
+
                   delegate: _SliverAppBarDelegate(
                     TabBar(
                       controller: _tabController,
@@ -195,11 +224,12 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                     ),
                   ),
                   pinned: true,
+                  floating: false,
                 ),
               ];
             },
             body: new FutureBuilder(
-                future: storage.read(key: 'timetable'),
+                future:storage.read(key: currTable),
                 builder:(context,AsyncSnapshot<String>snapshot){
                   image1= new CachedNetworkImageProvider(photo1) ;
                   image2=new CachedNetworkImageProvider(photo2);
@@ -280,14 +310,31 @@ class Carder extends StatefulWidget {
 }
 
 class _CarderState extends State<Carder> {
+  ScrollController _scrollController = new ScrollController();
+
   List day;
   _CarderState({this.day});
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _scrollController.addListener(()=>scrollToView());
+  }
+  
+  scrollToView()
+  {
+    print('scroller');
+    print(_scrollController.position);
+  }
+  
+  @override
   Widget build(BuildContext context) {
 
-    final textStyle = const TextStyle(fontSize: 24.0);
+    final textStyle = const TextStyle(fontSize: 20.0);
     final text = "DB-G Shoaib Rauf";
     return new ListView.builder(
+      
 
               itemCount: (day == null) ? 0 : day.length,
               itemBuilder: (context,index){
