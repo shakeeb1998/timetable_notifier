@@ -1,5 +1,5 @@
 name: timetable_notifier
-description: A new Flutter project.
+description: An original app to notify NUCES BSCS student about their classes.
 
 dependencies:
   flutter:
@@ -17,12 +17,6 @@ dependencies:
     git: https://github.com/jodinathan/validator.dart
   flutter_local_notifications: ^0.3.7
   indexed_list_view: ^0.0.2
-
-
-
-
-
-
 
 dev_dependencies:
   flutter_test:

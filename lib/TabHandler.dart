@@ -5,7 +5,7 @@ import 'Login.dart';
 import 'dart:convert';
 import "package:http/http.dart" as http;
 import 'package:cached_network_image/cached_network_image.dart';
-import 'freindFinder.dart';
+import 'friendFinder.dart';
 
 //Globals Variables
 

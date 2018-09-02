@@ -17,8 +17,6 @@ class freindFinder extends StatelessWidget {
   }
 }
 
-
-
 class FindFriend extends StatefulWidget {
  BuildContext context1;
   FindFriend( {this.context1}){
@@ -207,9 +205,11 @@ class _SearchBarState extends State<SearchBar> {
       }
     }
   }
+
   bool isValidEmail(String email) {
     return isEmail(email);
   }
+
   submit1()
   {
     print('SahKEEB');
@@ -277,7 +277,7 @@ class _listState extends State<list> {
   {
     print('friend table');
     String email=timeTable['email'];
-   Navigator.pop(context1,email);
+    Navigator.pop(context1,email);
   }
 }
 
