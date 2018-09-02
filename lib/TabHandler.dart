@@ -53,31 +53,11 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
     _tabController = new TabController(vsync: this, length: 5);
     _tabController.addListener((){
       print("in controller");
-      photoChanger();
+     // photoChanger();
     });
 
   }
-  photoChanger()
-  {
-    print("changing photoindex is");
-    print(_tabController.index);
-    setState(() {
-      if(_tabController.index==3)
-        {
-          tabImage=image2;
-        }
-        else if(_tabController.index==4)
-          {
-            tabImage=image3;
 
-          }
-          else if(_tabController.index==2)
-            {
-              tabImage=image1;
-
-            }
-    });
-  }
   setter()
   {
     print('setting');
@@ -201,18 +181,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                   expandedHeight: 200.0,
                   floating: false,
                   pinned: true,
-                  flexibleSpace: FlexibleSpaceBar(
-                      centerTitle: true,
-                      /*title: Text("Timetable Notifier",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.0,
-                          ))*/
-                      background:new FittedBox(
-                        fit: BoxFit.cover,
-                        child: (tabImage!=null)?new Image(image: tabImage):new Container(),
-                      )//add Image here
-                      ),
+                  flexibleSpace: FlexSpace(tabController: _tabController,),
                 ),
                 SliverPersistentHeader(
 
@@ -352,7 +321,7 @@ class _CarderState extends State<Carder> {
                     children: <Widget>[
                       new Row(
                         children: <Widget>[
-                          new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0),)
+                           new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0),)
                         ],
                       ),
                       new Row(
@@ -373,3 +342,77 @@ class _CarderState extends State<Carder> {
       }
 
   }
+  class FlexSpace extends StatefulWidget {
+  TabController tabController;
+  FlexSpace({this.tabController});
+  @override
+    _FlexSpaceState createState() => _FlexSpaceState(tabController: tabController);
+  }
+
+  class _FlexSpaceState extends State<FlexSpace> {
+    CachedNetworkImageProvider tabImage;
+    CachedNetworkImageProvider image1;
+    CachedNetworkImageProvider image2;
+    CachedNetworkImageProvider image3;
+    TabController tabController;
+    String photo1='https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg';
+    String photo2='https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350';
+    String photo3='http://techblogcorner.com/wp-content/uploads/2014/09/jpeg.jpg';
+    _FlexSpaceState({this.tabController});
+
+    @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    image1= new CachedNetworkImageProvider(photo1) ;
+    image2=new CachedNetworkImageProvider(photo2);
+    image3=new CachedNetworkImageProvider(photo3);
+    tabImage=image2;
+
+    tabController.addListener((){
+
+
+      setState(() {
+        photoChanger();
+      });
+    });
+    //String photo3='http://techblogcorner.com/wp-content/uploads/2014/09/jpeg.jpg';
+  }
+  @override
+    Widget build(BuildContext context) {
+      return FlexibleSpaceBar(
+          centerTitle: true,
+          /*title: Text("Timetable Notifier",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          ))*/
+          background:new FittedBox(
+            fit: BoxFit.cover,
+            child: (tabImage!=null)?new Image(image: tabImage):new Container(),
+          )//add Image here
+      );
+    }
+    photoChanger()
+    {
+      print("changing photoindex is");
+      print(tabController.index);
+      setState(() {
+        if(tabController.index==3)
+        {
+          tabImage=image2;
+        }
+        else if(tabController.index==4)
+        {
+          tabImage=image3;
+
+        }
+        else if(tabController.index==2)
+        {
+          tabImage=image1;
+
+        }
+      });
+    }
+  }
+
