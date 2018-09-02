@@ -99,6 +99,14 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   {
 
   }
+  myTimeTable()
+  {
+    Navigator.pop(context);
+    setState(() {
+      currTable='timetable';
+    });
+  }
+
   friends(BuildContext context)
   async {
     Navigator.of(context).pop();
@@ -162,7 +170,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                     ),
                   //  new ListTile(title:new Text("Register"),onTap: ()=>register(),),
                     //new Divider(),
-                    new ListTile(title:new Text("My Time Table"),onTap: null,),
+                    new ListTile(title:new Text("My Time Table"),onTap: ()=>myTimeTable(),),
                     new Divider(color: Colors.lightBlue,),
                     new ListTile(title:new Text("Friends"),onTap: ()=>friends(context),),
                     new Divider(color: Colors.lightBlue,),
