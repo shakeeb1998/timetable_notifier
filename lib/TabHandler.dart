@@ -35,6 +35,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   ObservableList observableList=new ObservableList(2);
   ValueNotifier memeState;
   bool SwitchVal;
+  bool handleSwitch=true;
   String currTable='timetable';
   var timeTable;
   BuildContext context1;
@@ -45,18 +46,34 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   String photo3='http://techblogcorner.com/wp-content/uploads/2014/09/jpeg.jpg';
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   FlutterSecureStorage storage=FlutterSecureStorage();
+  func( String st)
+  {
+    if(st=='1')
+      {
+        SwitchVal=true;
+
+      }
+      else
+        {
+          SwitchVal=false;
+        }
+  }
   @override
   void initState() {
+
     memeState=ValueNotifier(0);
     // TODO: implement initState
     super.initState();
-    if(memes=='1')
+    print('heelo');
+    if(memes=='1'&& handleSwitch==true)
     {
       SwitchVal=true;
+      handleSwitch=false;
     }
-    else
+    else if(handleSwitch==true)
     {
       SwitchVal=false;
+      handleSwitch=false;
     }
     _tabController = new TabController(vsync: this, length: 5);
     _tabController.addListener((){
@@ -87,35 +104,6 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
         currTable='timetable';
       });
     }
-  }
-  Future<bool> memesf(bool a)
-
-  async {
-    print('inFunc');
-    String val='';
-    if(a==true)
-    {
-      val='1';
-      await storage.write(key: 'memes', value: val);
-
-      //memeState.value('0');
-      memeState.value+=1;
-
-      //  memeState.notifyListeners();
-    }
-    else
-    {
-      val='0';
-      await storage.write(key: 'memes', value: val);
-      //memeState.value('1');
-      memeState.value+=1;
-      //  memeState.notifyListeners();
-
-    }
-    setState(() {
-      SwitchVal=a;
-    });
-
   }
 
   friends(BuildContext context)
@@ -166,7 +154,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
               if(snapshot.connectionState==ConnectionState.done)
               {
 
-                //   print(tabImage);
+                  print("switch is $memes");
                 var a=json.decode(snapshot.data);
                 return new Column(
                   children: <Widget>[
@@ -477,25 +465,62 @@ class Switcher extends StatefulWidget {
 class _SwitcherState extends State<Switcher> {
   bool val;
   ValueNotifier memeState;
+  String st='';
   FlutterSecureStorage storage= new FlutterSecureStorage();
 
   _SwitcherState({this.val,this.memeState});
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("shala lak");
+    print(st);
+
+  }
+  @override
   Widget build(BuildContext context) {
-    return Switch(onChanged:(a)=> memesf(a),value: val,);
+    print('val is $val');
+    return new FutureBuilder(
+        future: storage.read(key: 'memes'),
+        builder: (context ,AsyncSnapshot<String>snapshot)
+    {
+      if(snapshot.connectionState==ConnectionState.done)
+        {
+
+          if(snapshot.data=='1')
+            {
+              return Switch(onChanged:(a)=> memesf(a),value: true,);
+            }
+            else
+              {
+                return Switch(onChanged:(a)=> memesf(a),value: false,);
+
+              }
+        }
+      else
+      {
+        return new Container();
+      }
+
+
+    });
   }
   Future<bool> memesf(bool a)
 
   async {
     String val1;
-    print('inFunc');
+    print('inFunc $a');
     if(a==true)
     {
       val1='1';
       await storage.write(key: 'memes', value: val1);
-
+     st= await storage.read(key: 'memes');
       //memeState.value('0');
       memeState.value+=1;
+      setState(() {
+        print('changing');
+        val=a;
+      });
 
       //  memeState.notifyListeners();
     }
@@ -506,11 +531,13 @@ class _SwitcherState extends State<Switcher> {
       //memeState.value('1');
       memeState.value+=1;
       //  memeState.notifyListeners();
+      setState(() {
+        print('changing1');
+
+        val=a;
+      });
 
     }
-    setState(() {
-      val=a;
-    });
 
   }
 
