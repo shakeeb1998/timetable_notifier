@@ -10,7 +10,7 @@ import "package:http/http.dart" as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'friendFinder.dart';
 import 'package:observable/observable.dart';
-
+import 'package:hex/hex.dart';
 //Globals Variables
 class app extends StatelessWidget {
   String memes;
@@ -18,6 +18,7 @@ class app extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("mememmememememmem  $memes");
     return MaterialApp(home: app1(memes: memes,),);
   }
 }
@@ -197,7 +198,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
 
         headerSliverBuilder:
             (BuildContext context, bool innerBoxIsScrolled) {
-          print("memesval $memes");
+       //   print("memesval $memes");
           return <Widget>[
             (memes=='1')?FlexSpace(tabController: _tabController,memeState: memeState,hieght: 200.0,):FlexSpace(tabController: _tabController,memeState: memeState,hieght: 0.0,),
             SliverPersistentHeader(
@@ -321,27 +322,87 @@ class _CarderState extends State<Carder> {
 
   @override
   Widget build(BuildContext context) {
+
     return new ListView.builder(
       itemCount: (day == null) ? 0 : day.length,
       itemBuilder: (context,index){
-        return new Card(
-          color: new Color(hexToInt("FF" + day[index]['color'])),
-          child:new Column(
+        String color=day[index]['color'];
+        color='0x33'+color;
+
+        return new Stack(
+          overflow: Overflow.visible,
+        //fit: BoxFit.cover,
+         //alignment: Alignment(-1.0, -0.5),
+          children: <Widget>[
+       new Opacity(opacity: 0.6,
+         child: new Card(
+           elevation: 15.0,
+           color: Color(hexToInt(day[index]['color'])),
+          child:  Row(
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               new Row(
                 children: <Widget>[
-                  new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0),)
+                  new Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      new Text((getStartTimeAndEndTime(day[index]['timing'])[0]),style: TextStyle(fontSize: 24.0),),
+                      new Text((getStartTimeAndEndTime(day[index]['timing'])[1]),style: TextStyle(fontSize: 24.0),),
+
+                    ],
+                  ),
+                    new VerticalDivider(),
                 ],
+
               ),
-              new Row(
+              new Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  (day[index]['timing']!=null)?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0),):new Container(),
+
                   (day[index]['room']!=null)? new Text(day[index]['room'],style: TextStyle(fontSize: 24.0),):new Container(),
-                  (day[index]['timing']!=null)?new Text(day[index]['timing'],style: TextStyle(fontSize: 24.0),):new Container(),
                 ],
               )
             ],
           ) ,
-        ) ;
+         ),
+        
+       
+       ),
+
+      //  new Text('hehhe'),
+        Row(
+         // mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+           new Row(
+             children: <Widget>[
+               new Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: <Widget>[
+                   new Text((getStartTimeAndEndTime(day[index]['timing'])[0]),style: TextStyle(fontSize: 24.0),),
+                   new Text((getStartTimeAndEndTime(day[index]['timing'])[1]),style: TextStyle(fontSize: 24.0),),
+
+                 ],
+           ),
+               new VerticalDivider(),
+
+
+             ],
+
+            ),
+            new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                (day[index]['timing']!=null)?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0),):new Container(),
+
+                (day[index]['room']!=null)? new Text(day[index]['room'],style: TextStyle(fontSize: 24.0),):new Container(),
+              ],
+            )
+          ],
+        ) ,
+        
+          ],
+        );
       },
     );
   }
@@ -541,4 +602,14 @@ class _SwitcherState extends State<Switcher> {
 
   }
 
+}
+
+class VerticalDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => RotatedBox(
+    quarterTurns: 1,
+    child: Divider(
+      color: Colors.black,
+    ),
+  );
 }

@@ -39,5 +39,14 @@ int hexToInt(String hex)
       throw new FormatException("Invalid hexadecimal value");
     }
   }
+
   return val;
+}
+
+List<String> getStartTimeAndEndTime(String time)
+{
+  var timer=time.split('-');
+  timer[0]=timer[0]+':00';
+
+  return timer;
 }

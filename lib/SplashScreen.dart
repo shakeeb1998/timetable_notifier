@@ -142,6 +142,7 @@ class _dummyState extends State<dummy> {
     String memes=await storage.read(key: "memes");
     if(memes==null)
     {
+      memes='1';
       await storage.write(key: 'memes', value: "1");
       Navigator.of(context).pushReplacement(
 
@@ -183,12 +184,15 @@ class _dummy1State extends State<dummy1> {
 
   gotoLogin(BuildContext context) async {
     String memes=await storage.read(key: "memes");
+
     if(memes==null)
     {
       await storage.write(key: 'memes', value: "1");
+      memes='1';
+
     }
     Navigator.of(context).pushReplacement(
-        new MaterialPageRoute(builder: (BuildContext context) => new Login()
+        new MaterialPageRoute(builder: (BuildContext context) => new Login(memes: memes,)
         ));
   }
 

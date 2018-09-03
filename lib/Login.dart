@@ -13,7 +13,7 @@ class Login extends StatelessWidget {
   Login({this.memes});
   @override
   Widget build(BuildContext context) {
-
+    //print("shakku $memes");
     return MaterialApp(
       home: new Scaffold(
         body: new Login1(memes: memes,),
