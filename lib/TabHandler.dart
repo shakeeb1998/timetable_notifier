@@ -324,15 +324,12 @@ class _CarderState extends State<Carder> {
     return new ListView.builder(
       itemCount: (day == null) ? 0 : day.length,
       itemBuilder: (context,index){
-        String color=day[index]['color'];
-        color='0x33'+color;
-
         return new Stack(
           overflow: Overflow.visible,
         //fit: BoxFit.cover,
          //alignment: Alignment(-1.0, -0.5),
           children: <Widget>[
-       new Opacity(opacity: 0.6,
+       new Opacity(opacity: 1.0,
          child: new Card(
            elevation: 15.0,
            color: Color(int.parse(day[index]['color'])),
@@ -344,8 +341,8 @@ class _CarderState extends State<Carder> {
                   new Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      new Text((getStartTimeAndEndTime(day[index]['timing'])[0]),style: TextStyle(fontSize: 24.0),),
-                      new Text((getStartTimeAndEndTime(day[index]['timing'])[1]),style: TextStyle(fontSize: 24.0),),
+                      new Text((getStartTimeAndEndTime(day[index]['timing'])[0]), style: TextStyle(fontSize: 24.0),),
+                      new Text((getStartTimeAndEndTime(day[index]['timing'])[1]), style: TextStyle(fontSize: 24.0),),
 
                     ],
                   ),
@@ -356,9 +353,8 @@ class _CarderState extends State<Carder> {
               new Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  (day[index]['timing']!=null)?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0),):new Container(),
-
-                  (day[index]['room']!=null)? new Text(day[index]['room'],style: TextStyle(fontSize: 24.0),):new Container(),
+                  (day[index]['timing']!=null)?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0, color: new Color(4285557606)),):new Container(),
+                  (day[index]['room']!=null)? new Text(day[index]['room'],style: TextStyle(fontSize: 24.0, color: new Color(4285557606)),):new Container(),
                 ],
               )
             ],
