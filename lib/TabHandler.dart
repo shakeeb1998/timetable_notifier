@@ -45,18 +45,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
   String photo3='http://techblogcorner.com/wp-content/uploads/2014/09/jpeg.jpg';
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   FlutterSecureStorage storage=FlutterSecureStorage();
-  func( String st)
-  {
-    if(st=='1')
-      {
-        SwitchVal=true;
 
-      }
-      else
-        {
-          SwitchVal=false;
-        }
-  }
   @override
   void initState() {
 
@@ -82,13 +71,8 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
 
   }
 
-  setter()
-  {
-    print('setting');
-    setState(() {
-    });
-  }
   remove(){
+    cancelAllScheduledNotifications();
     storage.delete(key: 'status');
     Navigator.of(context).pushReplacement(
         new MaterialPageRoute(builder: (BuildContext context) => new Login()
@@ -100,13 +84,12 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
     Navigator.pop(context);
     if (currTable != 'timetable') {
       setState(() {
-        currTable='timetable';
+        currTable = 'timetable';
       });
     }
   }
 
-  friends(BuildContext context)
-  async {
+  friends(BuildContext context) async {
     Navigator.of(context).pop();
 
     var val=await  Navigator.push(
@@ -126,21 +109,20 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
     }
   }
 
-  fetch()
-  async {
+  fetch() async {
     String email=timeTable['email'].toString();
     final response = await http.get(
-        "https://tt.saadismail.net/api/fetch.php?email=%22$email%22");
+        "https://tt.saadismail.net/api/fetch.php?email=%22$email%22").
+        timeout(const Duration (seconds:5),onTimeout : _onTimeout());
     var responseJson = json.decode(response.body.toString());
     print('saad   ${response.body.toString()}');
     await storage.write(key: "timetable", value: response.body.toString());
     setState(() {
-      //
-      timeTable=responseJson;
+      timeTable = responseJson;
     });
     Navigator.of(context).pop();
-
   }
+
   @override
   Widget build(BuildContext context) {
     print('memes  $memes');
@@ -152,8 +134,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
             builder:(context,AsyncSnapshot<String>snapshot){
               if(snapshot.connectionState==ConnectionState.done)
               {
-
-                  print("switch is $memes");
+                print("switch is $memes");
                 var a=json.decode(snapshot.data);
                 return new Column(
                   children: <Widget>[
@@ -180,15 +161,9 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                     new ListTile(title:new Text("Memes"),onTap:null,trailing: new Switcher(memeState: memeState,val: SwitchVal,),)
                   ],
                 );
-
-
-
-              }
-              else
-              {
+              } else {
                 return new Container();
               }
-
             }
         ),
       ),
@@ -236,18 +211,14 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                 return new TabBarView(
                   controller: _tabController,
                   children: <Widget>[
-                    Carder(day:timeTable["0"],),
+                    Carder(day: timeTable['0'],),
                     Carder(day: timeTable['1'],),
                     Carder(day: timeTable['2'],),
-                    Carder(day:timeTable['3'],),
+                    Carder(day: timeTable['3'],),
                     Carder(day: timeTable['4'],),
-
-
                   ],
                 );
-              }
-              else
-              {
+              } else {
                 return new Container();
               }
 
@@ -255,16 +226,12 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
         ),
       ),
     );
-
-
   }
 
-  int getWeekDay()
-  {
-    if(DateTime.now().weekday==6||DateTime.now().weekday==7)
-      return 0;
-    else
-      return DateTime.now().weekday-1;
+  _onTimeout() {
+    Scaffold
+        .of(context)
+        .showSnackBar(new SnackBar(content: new Text("Could not fetch timetable.")));
   }
 }
 
@@ -438,21 +405,17 @@ class _FlexSpaceState extends State<FlexSpace> {
       print('toggling');
       String st=await storage.read(key: 'memes');
       print('value for st $st');
-      if(st=='1')
-      {
+      if(st=='1') {
         setState(() {
           hieght=200.0;
         });
-      }
-      else{
+      } else {
         setState(() {
           hieght=0.0;
         });
       }
     });
     tabController.addListener((){
-
-
       setState(() {
         photoChanger();
       });
@@ -522,8 +485,8 @@ class _SwitcherState extends State<Switcher> {
   ValueNotifier memeState;
   String st='';
   FlutterSecureStorage storage= new FlutterSecureStorage();
-
   _SwitcherState({this.val,this.memeState});
+
   @override
   void initState() {
     // TODO: implement initState
@@ -532,41 +495,29 @@ class _SwitcherState extends State<Switcher> {
     print(st);
 
   }
+
   @override
   Widget build(BuildContext context) {
     print('val is $val');
     return new FutureBuilder(
-        future: storage.read(key: 'memes'),
-        builder: (context ,AsyncSnapshot<String>snapshot)
-    {
-      if(snapshot.connectionState==ConnectionState.done)
-        {
-
-          if(snapshot.data=='1')
-            {
-              return Switch(onChanged:(a)=> memesf(a),value: true,);
-            }
-            else
-              {
-                return Switch(onChanged:(a)=> memesf(a),value: false,);
-
-              }
+      future: storage.read(key: 'memes'),
+      builder: (context ,AsyncSnapshot<String>snapshot) {
+        if(snapshot.connectionState==ConnectionState.done) {
+          if(snapshot.data=='1') {
+            return Switch(onChanged:(a)=> memesf(a),value: true,);
+          } else {
+            return Switch(onChanged:(a)=> memesf(a),value: false,);
+          }
+        } else {
+          return new Container();
         }
-      else
-      {
-        return new Container();
-      }
-
-
-    });
+      });
   }
-  Future<bool> memesf(bool a)
 
-  async {
+  Future<bool> memesf(bool a) async {
     String val1;
     print('inFunc $a');
-    if(a==true)
-    {
+    if(a==true) {
       val1='1';
       await storage.write(key: 'memes', value: val1);
      st= await storage.read(key: 'memes');
@@ -576,11 +527,8 @@ class _SwitcherState extends State<Switcher> {
         print('changing');
         val=a;
       });
-
       //  memeState.notifyListeners();
-    }
-    else
-    {
+    } else {
       val1='0';
       await storage.write(key: 'memes', value: val1);
       //memeState.value('1');
@@ -588,14 +536,10 @@ class _SwitcherState extends State<Switcher> {
       //  memeState.notifyListeners();
       setState(() {
         print('changing1');
-
         val=a;
       });
-
     }
-
   }
-
 }
 
 class VerticalDivider extends StatelessWidget {

@@ -4,7 +4,6 @@ import 'dart:convert';
 
 scheduleNotification() async
 {
-
   var initializationSettingsAndroid =
       new AndroidInitializationSettings('@mipmap/ic_launcher');
   var initializationSettingsIOS = new IOSInitializationSettings();
@@ -14,9 +13,9 @@ scheduleNotification() async
   flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'timetable_channel_0',
-      'Timetable Notifier',
-      'Notifies about classes');
+      'timetable_channel_0', 'Timetable Notifier', 'Notifies about classes',
+      importance: Importance.Max, priority: Priority.Max);
+
   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
   var platformChannelSpecifics = new NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
