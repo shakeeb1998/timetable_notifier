@@ -9,8 +9,7 @@ import 'dart:convert';
 import "package:http/http.dart" as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'friendFinder.dart';
-import 'package:observable/observable.dart';
-import 'package:hex/hex.dart';
+
 //Globals Variables
 class app extends StatelessWidget {
   String memes;
@@ -33,7 +32,6 @@ class app1 extends StatefulWidget {
 class _appState extends State<app1>with SingleTickerProviderStateMixin {
   String memes;
   _appState({this.memes});
-  ObservableList observableList=new ObservableList(2);
   ValueNotifier memeState;
   bool SwitchVal;
   bool handleSwitch=true;
@@ -337,7 +335,7 @@ class _CarderState extends State<Carder> {
        new Opacity(opacity: 0.6,
          child: new Card(
            elevation: 15.0,
-           color: Color(hexToInt(day[index]['color'])),
+           color: Color(int.parse(day[index]['color'])),
           child:  Row(
             // mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

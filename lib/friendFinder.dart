@@ -1,12 +1,8 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:convert' show JSON;
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:validator/validator.dart';
+import 'package:timetable_notifier/functions.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:timetable_notifier/TabHandler.dart';
 import "package:http/http.dart" as http;
 
 class freindFinder extends StatelessWidget {
@@ -204,10 +200,6 @@ class _SearchBarState extends State<SearchBar> {
            new MaterialPageRoute(builder: (BuildContext context) => new app()));*/
       }
     }
-  }
-
-  bool isValidEmail(String email) {
-    return isEmail(email);
   }
 
   submit1()

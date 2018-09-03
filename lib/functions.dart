@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:convert/convert.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:validator/validator.dart';
 
 Future<bool> isInternetWorking() async {
   try {
@@ -16,7 +14,8 @@ Future<bool> isInternetWorking() async {
 }
 
 bool isValidEmail(String email) {
-  return isEmail(email);
+  RegExp _email = new RegExp(r"^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$");
+  return _email.hasMatch(email.toLowerCase());
 }
 
 void cancelAllScheduledNotifications() {
@@ -37,26 +36,4 @@ List<String> getStartTimeAndEndTime(String time)
   timer[0]=timer[0]+':00';
 
   return timer;
-}
-int hexToInt(String hex)
-{
-  int val = 0;
-  int len = hex.length;
-  for (int i = 0; i < len; i++) {
-    int hexDigit = hex.codeUnitAt(i);
-    if (hexDigit >= 48 && hexDigit <= 57) {
-      val += (hexDigit - 48) * (1 << (4 * (len - 1 - i)));
-    } else if (hexDigit >= 65 && hexDigit <= 70) {
-      // A..F
-      val += (hexDigit - 55) * (1 << (4 * (len - 1 - i)));
-    } else if (hexDigit >= 97 && hexDigit <= 102) {
-      // a..f
-      val += (hexDigit - 87) * (1 << (4 * (len - 1 - i)));
-    } else {
-      throw new FormatException("Invalid hexadecimal value");
-    }
-  }
-
-  return val;
-
 }
