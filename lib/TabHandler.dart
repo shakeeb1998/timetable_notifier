@@ -158,7 +158,22 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                     new Divider(color: Colors.lightBlue,),
                     new ListTile(title:new Text("Fetch"),onTap:()=>fetch()),
                     new Divider(color: Colors.lightBlue,),
-                    new ListTile(title:new Text("Memes"),onTap:null,trailing: new Switcher(memeState: memeState,val: SwitchVal,),)
+                    //new ListTile(title:new Text("Memes"),onTap:null,trailing: new Switcher(memeState: memeState,val: SwitchVal,),)
+                    new Container(
+                    child: new Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        new Expanded(child: new Container(
+                         // constraints: BoxConstraints.tightForFinite(width: 5000.0),
+                          child: new ListTile(title: new Text("Memes"),),
+                        ),),
+                       // new Text("dfg"),
+                        new Switcher(memeState: memeState,val: SwitchVal,),
+                      ],
+
+                    ),
+
+                    ),
                   ],
                 );
               } else {
@@ -293,8 +308,8 @@ class _CarderState extends State<Carder> {
       itemBuilder: (context,index){
         return new Stack(
           overflow: Overflow.visible,
-        //fit: BoxFit.cover,
-         //alignment: Alignment(-1.0, -0.5),
+        fit: StackFit.passthrough,
+         alignment: Alignment(-1.0, 0.0),
           children: <Widget>[
        new Opacity(opacity: 1.0,
          child: new Card(
@@ -308,20 +323,20 @@ class _CarderState extends State<Carder> {
                   new Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      new Text((getStartTimeAndEndTime(day[index]['timing'])[0]), style: TextStyle(fontSize: 24.0),),
-                      new Text((getStartTimeAndEndTime(day[index]['timing'])[1]), style: TextStyle(fontSize: 24.0),),
+                      new Opacity(opacity: 0.0,child:new Text((getStartTimeAndEndTime(day[index]['timing'])[0]), style: TextStyle(fontSize: 24.0),), ),
+                      new Opacity(opacity: 0.0,child:new Text((getStartTimeAndEndTime(day[index]['timing'])[1]), style: TextStyle(fontSize: 24.0),), ),
 
                     ],
                   ),
-                    new VerticalDivider(),
+                  //  new VerticalDivider1(),
                 ],
 
               ),
               new Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  (day[index]['timing']!=null)?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0, color: new Color(4285557606)),):new Container(),
-                  (day[index]['room']!=null)? new Text(day[index]['room'],style: TextStyle(fontSize: 24.0, color: new Color(4285557606)),):new Container(),
+                  new Opacity(opacity: 0.0,child:day[index]['timing']!=null?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0, )):new Container(),),
+                  new Opacity(opacity: 0.0,child:(day[index]['room']!=null)?new Text(day[index]['room'],style: TextStyle(fontSize: 24.0,)):new Container()),
                 ],
               )
             ],
@@ -345,7 +360,7 @@ class _CarderState extends State<Carder> {
 
                  ],
            ),
-               new VerticalDivider(),
+               new VerticalDivider1(),
 
 
              ],
@@ -542,12 +557,15 @@ class _SwitcherState extends State<Switcher> {
   }
 }
 
-class VerticalDivider extends StatelessWidget {
+
+class VerticalDivider1 extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => RotatedBox(
-    quarterTurns: 1,
-    child: Divider(
+  Widget build(BuildContext context) {
+    return new Container(
+      height: 30.0,
+      width: 1.0,
       color: Colors.black,
-    ),
-  );
+      margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+    );
+  }
 }
