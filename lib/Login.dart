@@ -126,6 +126,7 @@ class _Login1State extends State<Login1> {
           scheduleNotification();
           print(responseJson);
           Navigator.of(context).pushReplacement(
+
               new MaterialPageRoute(builder: (BuildContext context) => new app(memes: memes,)));
         }
       } catch (e) {
