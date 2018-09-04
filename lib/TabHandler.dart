@@ -137,7 +137,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
               {
                 print("switch is $memes");
                 var a=json.decode(snapshot.data);
-                return new Column(
+                return new ListView(
                   children: <Widget>[
                     new UserAccountsDrawerHeader(
                       accountEmail: new Text(a['name'].toString()),
