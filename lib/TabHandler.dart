@@ -35,7 +35,6 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
 
   ValueNotifier memeState;
   bool SwitchVal;
-  bool handleSwitch=true;
   String currTable='timetable';
   var timeTable;
   BuildContext context1;
@@ -53,18 +52,17 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
     memeState=ValueNotifier(0);
     // TODO: implement initState
     super.initState();
-    print('heelo');
-    if(memes=='1'&& handleSwitch==true)
-    {
+
+    if(memes == '1') {
       SwitchVal=true;
-      handleSwitch=false;
-    }
-    else if(handleSwitch==true)
-    {
+    } else {
       SwitchVal=false;
-      handleSwitch=false;
     }
-    _tabController = new TabController(vsync: this, length: 5);
+
+    int tabToShow = (DateTime.now().weekday - 1);
+    tabToShow = (tabToShow >= 0 && tabToShow <= 4) ? tabToShow : 0;
+
+    _tabController = new TabController(vsync: this, length: 5, initialIndex: tabToShow);
     _tabController.addListener((){
       print("in controller");
       // photoChanger();
@@ -95,7 +93,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
 
     var val=await  Navigator.push(
         context,
-        new MaterialPageRoute(builder: (context) => new freindFinder()));
+        new MaterialPageRoute(builder: (context) => new friendFinder()));
     print('valis $val');
     if(val ==null)
     {
@@ -197,22 +195,18 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
                   TabBar(
                     controller: _tabController,
                     indicatorColor: Colors.lime,
-
                     labelColor: Colors.white,
                     unselectedLabelColor: Colors.grey,
                     tabs: [
                       Tab( text: "Mon"),
                       Tab( text: "Tue"),
                       Tab( text: "Wed"),
-                      Tab( text: "Thurs"),
+                      Tab( text: "Thu"),
                       Tab( text: "Fri"),
-
-
                     ],
                   ),
                 ),
                 pinned: true,
-                floating: false,
               ),
             ];
           },
@@ -540,7 +534,6 @@ class Switcher extends StatefulWidget {
 class _SwitcherState extends State<Switcher> {
   bool val;
   ValueNotifier memeState;
-  String st='';
   FlutterSecureStorage storage= new FlutterSecureStorage();
   _SwitcherState({this.val,this.memeState});
 
@@ -548,9 +541,6 @@ class _SwitcherState extends State<Switcher> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("shala lak");
-    print(st);
-
   }
 
   @override
@@ -577,7 +567,6 @@ class _SwitcherState extends State<Switcher> {
     if(a==true) {
       val1='1';
       await storage.write(key: 'memes', value: val1);
-     st= await storage.read(key: 'memes');
       //memeState.value('0');
       memeState.value+=1;
       setState(() {

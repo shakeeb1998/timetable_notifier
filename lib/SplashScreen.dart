@@ -12,17 +12,6 @@ class _SplashScreenState extends State<SplashScreen1>
   var _iconAnimation;
 AnimationController _iconAnimationController;
 
-   handleTimeout() async {
-
-
-  }
-
-
-  startTimeout() async {
-    var duration = const Duration(seconds: 1);
-    return new Timer(duration, handleTimeout);
-  }
-
   @override
   void initState() {
     // TODO: implement initState
@@ -41,8 +30,6 @@ AnimationController _iconAnimationController;
         // custom code here
       }
     });
-
-    startTimeout();
   }
 
   @override
@@ -129,12 +116,7 @@ class _dummyState extends State<dummy> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    startTime();
-  }
-
-  startTime() async {
-    var _duration = new Duration(seconds: 1);
-    return new Timer(_duration, () => gotoOrder(context));
+    gotoOrder(context);
   }
 
   gotoOrder(BuildContext context) async {

@@ -6,7 +6,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import "package:http/http.dart" as http;
 import 'package:timetable_notifier/functions.dart';
 import 'TabHandler.dart';
-import 'notificationHelper.dart';
 
 class Login extends StatelessWidget {
  String memes="";

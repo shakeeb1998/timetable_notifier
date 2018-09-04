@@ -5,7 +5,7 @@ import 'package:timetable_notifier/functions.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import "package:http/http.dart" as http;
 
-class freindFinder extends StatelessWidget {
+class friendFinder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
@@ -25,15 +25,11 @@ class FindFriend extends StatefulWidget {
 
 class _FindFriendState extends State<FindFriend> {
 
-
   FlutterSecureStorage storage = new FlutterSecureStorage();
   BuildContext context1;
  // TextEditingController controller= new TextEditingController(text: '@nu.edu.pk');
 
-  _FindFriendState({this.context1})
-  {
-  }
-
+  _FindFriendState({this.context1});
 
   @override
   Widget build(BuildContext context) {
@@ -254,7 +250,7 @@ class _listState extends State<list> {
           itemCount: x,
           itemBuilder: (context,index){
           print(snapshot.data.keys.toList()[index]);
-            return new ListTile(onTap: ()=>freindsTable(json.decode(snapshot.data[snapshot.data.keys.toList()[index].toString()])),title: new Text(jsonDecode(snapshot.data[snapshot.data.keys.toList()[index].toString()])['name']),);
+            return new ListTile(onTap: ()=>friendsTable(json.decode(snapshot.data[snapshot.data.keys.toList()[index].toString()])),title: new Text(jsonDecode(snapshot.data[snapshot.data.keys.toList()[index].toString()])['name']),);
           }
       );
     }
@@ -266,7 +262,7 @@ class _listState extends State<list> {
     );
 
   }
-  freindsTable(var timeTable)
+  friendsTable(var timeTable)
   {
     print('friend table');
     String email=timeTable['email'];
