@@ -30,8 +30,9 @@ class app1 extends StatefulWidget {
 }
 
 class _appState extends State<app1>with SingleTickerProviderStateMixin {
-  String memes;
   _appState({this.memes});
+  String memes;
+
   ValueNotifier memeState;
   bool SwitchVal;
   bool handleSwitch=true;
@@ -184,34 +185,37 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
       ),
       body:  NestedScrollView(
 
-        headerSliverBuilder:
-            (BuildContext context, bool innerBoxIsScrolled) {
-       //   print("memesval $memes");
-          return <Widget>[
-            (memes=='1')?FlexSpace(tabController: _tabController,memeState: memeState,hieght: 200.0,):FlexSpace(tabController: _tabController,memeState: memeState,hieght: 0.0,),
-            SliverPersistentHeader(
-
-              delegate: _SliverAppBarDelegate(
-                TabBar(
-                  controller: _tabController,
-                  indicatorColor: Colors.lime,
-
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.grey,
-                  tabs: [
-                    Tab( text: "Mon"),
-                    Tab( text: "Tue"),
-                    Tab(text: "Wed"),
-                    Tab( text: "Thurs"),
-                    Tab(text: "Fri"),
-                  ],
-                ),
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              new SliverOverlapAbsorber(
+                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                child: FlexSpace(tabController: _tabController,memeState:  memeState,hieght: 0.0,),
               ),
-              pinned: true,
-              floating: false,
-            ),
-          ];
-        },
+              SliverPersistentHeader(
+
+                delegate: _SliverAppBarDelegate(
+                  TabBar(
+                    controller: _tabController,
+                    indicatorColor: Colors.lime,
+
+                    labelColor: Colors.white,
+                    unselectedLabelColor: Colors.grey,
+                    tabs: [
+                      Tab( text: "Mon"),
+                      Tab( text: "Tue"),
+                      Tab( text: "Wed"),
+                      Tab( text: "Thurs"),
+                      Tab( text: "Fri"),
+
+
+                    ],
+                  ),
+                ),
+                pinned: true,
+                floating: false,
+              ),
+            ];
+          },
         body: new FutureBuilder(
             future:storage.read(key: currTable),
             builder:(context,AsyncSnapshot<String>snapshot){
@@ -303,87 +307,125 @@ class _CarderState extends State<Carder> {
   @override
   Widget build(BuildContext context) {
 
-    return new ListView.builder(
-      itemCount: (day == null) ? 0 : day.length,
-      itemBuilder: (context,index){
-        return new Stack(
-          overflow: Overflow.visible,
-        fit: StackFit.passthrough,
-         alignment: Alignment(-1.0, 0.0),
-          children: <Widget>[
-       new Opacity(opacity: 1.0,
-         child: new Card(
-           elevation: 15.0,
-           color: Color(int.parse(day[index]['color'])),
-          child:  Row(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Row(
-                children: <Widget>[
-                  new Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new Opacity(opacity: 0.0,child:new Text((getStartTimeAndEndTime(day[index]['timing'])[0]), style: TextStyle(fontSize: 24.0),), ),
-                      new Opacity(opacity: 0.0,child:new Text((getStartTimeAndEndTime(day[index]['timing'])[1]), style: TextStyle(fontSize: 24.0),), ),
-
-                    ],
-                  ),
-                  //  new VerticalDivider1(),
-                ],
-
+   return new SafeArea(
+      top: false,
+      bottom: false,
+      child: new Builder(
+        builder: (BuildContext context) {
+          return new CustomScrollView(
+            //key: new PageStorageKey<_Page>(page),
+            slivers: <Widget>[
+              new SliverOverlapInjector(
+                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
               ),
-              new Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  new Opacity(opacity: 0.0,child:day[index]['timing']!=null?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0, )):new Container(),),
-                  new Opacity(opacity: 0.0,child:(day[index]['room']!=null)?new Text(day[index]['room'],style: TextStyle(fontSize: 24.0,)):new Container()),
-                ],
-              )
+              new SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 0.0,
+                  horizontal: 0.0,
+                ),
+                sliver: new SliverList(
+
+                  delegate: new SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                      // final _CardData data = _allPages[page][index];
+                      return new Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 0.0,
+                        ),
+                        child: new Card(
+                          child: new Stack(
+                            overflow: Overflow.visible,
+                            fit: StackFit.passthrough,
+                            alignment: Alignment(-1.0, 0.0),
+                            children: <Widget>[
+                              new Opacity(opacity: 1.0,
+                                child: new Card(
+                                  elevation: 15.0,
+                                  color: Color(int.parse(day[index]['color'])),
+                                  child:  Row(
+                                    // mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Row(
+                                        children: <Widget>[
+                                          new Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              new Opacity(opacity: 0.0,child:new Text((getStartTimeAndEndTime(day[index]['timing'])[0]), style: TextStyle(fontSize: 24.0),), ),
+                                              new Opacity(opacity: 0.0,child:new Text((getStartTimeAndEndTime(day[index]['timing'])[1]), style: TextStyle(fontSize: 24.0),), ),
+
+                                            ],
+                                          ),
+                                          //  new VerticalDivider1(),
+                                        ],
+
+                                      ),
+                                      new Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          new Opacity(opacity: 0.0,child:day[index]['timing']!=null?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0, )):new Container(),),
+                                          new Opacity(opacity: 0.0,child:(day[index]['room']!=null)?new Text(day[index]['room'],style: TextStyle(fontSize: 24.0,)):new Container()),
+                                        ],
+                                      )
+                                    ],
+                                  ) ,
+                                ),
+
+
+                              ),
+
+                              //  new Text('hehhe'),
+                              Row(
+                                // mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  new Row(
+                                    children: <Widget>[
+                                      new Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          new Text((getStartTimeAndEndTime(day[index]['timing'])[0]),style: TextStyle(fontSize: 24.0),),
+                                          new Text((getStartTimeAndEndTime(day[index]['timing'])[1]),style: TextStyle(fontSize: 24.0),),
+
+                                        ],
+                                      ),
+                                      new VerticalDivider1(),
+
+
+                                    ],
+
+                                  ),
+                                  new Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      (day[index]['timing']!=null)?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0),):new Container(),
+
+                                      (day[index]['room']!=null)? new Text(day[index]['room'],style: TextStyle(fontSize: 24.0),):new Container(),
+                                    ],
+                                  )
+                                ],
+                              ) ,
+
+                            ],
+                          ),
+
+
+
+                        ),
+                      );
+                    },
+                    childCount:day.length,
+                  ),
+                ),
+              ),
             ],
-          ) ,
-         ),
-        
-       
-       ),
-
-      //  new Text('hehhe'),
-        Row(
-         // mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-           new Row(
-             children: <Widget>[
-               new Column(
-                 mainAxisAlignment: MainAxisAlignment.center,
-                 children: <Widget>[
-                   new Text((getStartTimeAndEndTime(day[index]['timing'])[0]),style: TextStyle(fontSize: 24.0),),
-                   new Text((getStartTimeAndEndTime(day[index]['timing'])[1]),style: TextStyle(fontSize: 24.0),),
-
-                 ],
-           ),
-               new VerticalDivider1(),
-
-
-             ],
-
-            ),
-            new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                (day[index]['timing']!=null)?new Text(day[index]['subject'],style: TextStyle(fontSize: 24.0),):new Container(),
-
-                (day[index]['room']!=null)? new Text(day[index]['room'],style: TextStyle(fontSize: 24.0),):new Container(),
-              ],
-            )
-          ],
-        ) ,
-        
-          ],
-        );
-      },
+          );
+        },
+      ),
     );
+
+      }
+
   }
 
-}
 class FlexSpace extends StatefulWidget {
   TabController tabController;
   String status;
