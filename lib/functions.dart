@@ -27,13 +27,11 @@ void cancelAllScheduledNotifications() {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
   flutterLocalNotificationsPlugin.initialize(initializationSettings);
   flutterLocalNotificationsPlugin.cancelAll();
-
 }
 
 List<String> getStartTimeAndEndTime(String time)
 {
   var timer=time.split('-');
   timer[0]=timer[0]+':00';
-
   return timer;
 }

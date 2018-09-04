@@ -1,4 +1,4 @@
-package com.example.timetablenotifier;
+package host.timetable.timetablenotifier;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
