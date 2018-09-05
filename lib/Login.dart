@@ -29,7 +29,7 @@ class Login1 extends StatefulWidget {
 }
 
 class _Login1State extends State<Login1> {
-  bool a=true;
+  bool progressDialogStatus = false;
   String memes='';
   _Login1State({this.memes});
   FlutterSecureStorage storage = new FlutterSecureStorage();
@@ -78,7 +78,7 @@ class _Login1State extends State<Login1> {
           padding: const EdgeInsets.all(8.0),
           child: new RaisedButton(
             onPressed: () => submit(),
-            child: (a)?new Text("Submit"):new Padding(padding: EdgeInsets.all(2.0),child: new CircularProgressIndicator(strokeWidth: 1.0,),),
+            child: (!progressDialogStatus) ? new Text("Submit") : new Padding(padding: EdgeInsets.all(2.0),child: new CircularProgressIndicator(strokeWidth: 1.0,),),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0)),
             ),
@@ -91,7 +91,7 @@ class _Login1State extends State<Login1> {
   listener() {}
   submit() async {
     setState(() {
-      a=false;
+      progressDialogStatus = true;
     });
     String email = controller.text;
     if (!isValidEmail(email)) {
@@ -99,14 +99,14 @@ class _Login1State extends State<Login1> {
           .of(context1)
           .showSnackBar(new SnackBar(content: new Text("Invalid Email Address")));
       setState(() {
-        a=true;
+        progressDialogStatus = false;
       });
     } else if (! await isInternetWorking()) {
       Scaffold
           .of(context1)
           .showSnackBar(new SnackBar(content: new Text("Needs Internet Connectivity")));
       setState(() {
-        a=true;
+        progressDialogStatus = false;
       });
     } else {
       try {
@@ -121,7 +121,7 @@ class _Login1State extends State<Login1> {
               .of(context1)
               .showSnackBar(new SnackBar(content: new Text("Invalid User")));
           setState(() {
-            a=true;
+            progressDialogStatus = false;
           });
         } else {
           print('writing');
@@ -146,7 +146,7 @@ class _Login1State extends State<Login1> {
             .of(context1)
             .showSnackBar(new SnackBar(content: new Text("Could not fetch timetable")));
         setState(() {
-          a=true;
+          progressDialogStatus = false;
         });
       }
     }
