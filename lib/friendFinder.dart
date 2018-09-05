@@ -124,12 +124,15 @@ class _SearchBarState extends State<SearchBar> {
           decoration: InputDecoration(
 
               border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10.0)))),
-         // onSubmitted:(str)=>submit1(),
+          onSubmitted:(str)=>submit1(),
         ),
         )
         ,
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
+        InkWell(
+          highlightColor: Colors.red,
+          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+          radius: 12.0,
+          //behavior: HitTestBehavior.opaque,
             onTap:()=>  submit1(),
             child: new Icon(Icons.search,size: 40.0,))
 

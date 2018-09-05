@@ -29,6 +29,7 @@ class Login1 extends StatefulWidget {
 }
 
 class _Login1State extends State<Login1> {
+  bool a=true;
   String memes='';
   _Login1State({this.memes});
   FlutterSecureStorage storage = new FlutterSecureStorage();
@@ -77,7 +78,7 @@ class _Login1State extends State<Login1> {
           padding: const EdgeInsets.all(8.0),
           child: new RaisedButton(
             onPressed: () => submit(),
-            child: new Text("Submit"),
+            child: (a)?new Text("Submit"):new Padding(padding: EdgeInsets.all(2.0),child: new CircularProgressIndicator(strokeWidth: 1.0,),),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0)),
             ),
@@ -89,15 +90,24 @@ class _Login1State extends State<Login1> {
 
   listener() {}
   submit() async {
+    setState(() {
+      a=false;
+    });
     String email = controller.text;
     if (!isValidEmail(email)) {
       Scaffold
           .of(context1)
           .showSnackBar(new SnackBar(content: new Text("Invalid Email Address")));
+      setState(() {
+        a=true;
+      });
     } else if (! await isInternetWorking()) {
       Scaffold
           .of(context1)
           .showSnackBar(new SnackBar(content: new Text("Needs Internet Connectivity")));
+      setState(() {
+        a=true;
+      });
     } else {
       try {
         print('fetching');
@@ -110,6 +120,9 @@ class _Login1State extends State<Login1> {
           Scaffold
               .of(context1)
               .showSnackBar(new SnackBar(content: new Text("Invalid User")));
+          setState(() {
+            a=true;
+          });
         } else {
           print('writing');
           String fStatus=await storage.read(key: "friendStatus");
@@ -132,6 +145,9 @@ class _Login1State extends State<Login1> {
         Scaffold
             .of(context1)
             .showSnackBar(new SnackBar(content: new Text("Could not fetch timetable")));
+        setState(() {
+          a=true;
+        });
       }
     }
   }

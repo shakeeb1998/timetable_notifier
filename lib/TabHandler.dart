@@ -187,7 +187,7 @@ class _appState extends State<app1>with SingleTickerProviderStateMixin {
             return <Widget>[
               new SliverOverlapAbsorber(
                 handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                child: FlexSpace(tabController: _tabController,memeState:  memeState,hieght: 0.0,),
+                child: (memes=='1')?FlexSpace(tabController: _tabController,memeState:  memeState,hieght: 200.0,):FlexSpace(tabController: _tabController,memeState:  memeState,hieght: 0.0,),
               ),
               SliverPersistentHeader(
 
