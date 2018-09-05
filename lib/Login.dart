@@ -117,7 +117,6 @@ class _Login1State extends State<Login1> {
           if(fStatus==null)
           {
             await storage.write(key: 'friendStatus', value: '0');
-            //  await storage.write(key: 'freinds', value: '[{"a":"b"}]');
           }
 
           await storage.write(key: 'status', value: '1');

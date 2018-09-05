@@ -233,10 +233,7 @@ class _listState extends State<list> {
     if(snapshot.connectionState==ConnectionState.done)
     {
       print('shala');
-      snapshot.data.remove('s');
-      snapshot.data.remove('freinds');
       snapshot.data.remove('status');
-      snapshot.data.remove('0');
       snapshot.data.remove('timetable');
       snapshot.data.remove('friends');
       snapshot.data.remove('memes');
