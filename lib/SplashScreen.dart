@@ -1,16 +1,17 @@
 import 'dart:async';
+import 'package:timetable_notifier/functions.dart';
+
 import 'TabHandler.dart';
 import 'package:flutter/material.dart';
 import 'Login.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-
-class _SplashScreenState extends State<SplashScreen1>
+class _SplashScreenState extends State<SplashScreenStateful>
     with SingleTickerProviderStateMixin {
-  FlutterSecureStorage storage=new FlutterSecureStorage();
+  FlutterSecureStorage storage = new FlutterSecureStorage();
 
   var _iconAnimation;
-AnimationController _iconAnimationController;
+  AnimationController _iconAnimationController;
 
   @override
   void initState() {
@@ -20,31 +21,39 @@ AnimationController _iconAnimationController;
     _iconAnimationController = new AnimationController(
         vsync: this, duration: new Duration(milliseconds: 1500));
 
-     _iconAnimation = new CurvedAnimation(
+    _iconAnimation = new CurvedAnimation(
         parent: _iconAnimationController, curve: Curves.easeInOut);
     _iconAnimation.addListener(() => this.setState(() {}));
 
     _iconAnimationController.forward();
     _iconAnimationController.addStatusListener((status) {
-      if(status == AnimationStatus.completed) {
+      if (status == AnimationStatus.completed) {
         // custom code here
       }
     });
+
+    initializeMeme();
+  }
+
+  initializeMeme() async {
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String memes = await storage.read(key: "memes");
+    if (memes == null) {
+      await storage.write(key: 'memes', value: "1");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       body: new Scaffold(
-        backgroundColor: Colors.lightBlueAccent,
-        body:Center(
-          child: new FutureBuilder(
-              future: storage.read(key: 'status'),
-              builder: (context,AsyncSnapshot<String>snapshot){
-                if(snapshot.connectionState==ConnectionState.done) {
-                  print(snapshot.data);
-                  if (snapshot.data==null||snapshot.data=='0')
-                    {
+          backgroundColor: Colors.lightBlueAccent,
+          body: Center(
+            child: new FutureBuilder(
+                future: storage.read(key: 'mainEmail'),
+                builder: (context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.data == null) {
                       return new Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -53,65 +62,62 @@ AnimationController _iconAnimationController;
                             width: _iconAnimation.value * 200,
                             height: _iconAnimation.value * 200,
                           ),
-                          new dummy1(),
+                          new LoginActivity(),
                         ],
                       );
-                    }
-                  else
-                    {
+                    } else {
                       return new Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-
                         children: <Widget>[
                           Image(
                             image: new AssetImage("assets/logo.png"),
                             width: _iconAnimation.value * 200,
                             height: _iconAnimation.value * 200,
                           ),
-                          new dummy(),
+                          new TabHandlerActivity(),
                         ],
                       );
                     }
-                }
-                else{
-                  return new Image(
-                    image: new AssetImage("assets/logo.png"),
-                    width: _iconAnimation.value * 200,
-                    height: _iconAnimation.value * 200,
-                  );
-                }
-
-          }),
-        )
-
-            ),
+                  } else {
+                    return new Image(
+                      image: new AssetImage("assets/logo.png"),
+                      width: _iconAnimation.value * 200,
+                      height: _iconAnimation.value * 200,
+                    );
+                  }
+                }),
+          )),
     );
+  }
+
+  Future<String> _updateTimetableIfInternet() async {
+    if (await isInternetWorking()) {
+      String mainEmail = await storage.read(key: 'mainEmail');
+      bool fetchSuccess = await fetchTimetable(mainEmail, context);
+      return storage.read(key: mainEmail);
+    }
   }
 }
 
-
-class SplashScreen1 extends StatefulWidget{
+class SplashScreenStateful extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
-
-
-
 }
+
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: new SplashScreen1(),
+      home: new SplashScreenStateful(),
     );
   }
 }
 
-
-class dummy extends StatefulWidget {
+class TabHandlerActivity extends StatefulWidget {
   @override
-  _dummyState createState() => new _dummyState();
+  _TabHandlerActivityState createState() => new _TabHandlerActivityState();
 }
 
-class _dummyState extends State<dummy> {
+class _TabHandlerActivityState extends State<TabHandlerActivity> {
   @override
   void initState() {
     // TODO: implement initState
@@ -120,23 +126,11 @@ class _dummyState extends State<dummy> {
   }
 
   gotoOrder(BuildContext context) async {
-    FlutterSecureStorage storage=new FlutterSecureStorage();
-    String memes=await storage.read(key: "memes");
-    if(memes==null)
-    {
-      memes='1';
-      await storage.write(key: 'memes', value: "1");
-      Navigator.of(context).pushReplacement(
+    FlutterSecureStorage storage = new FlutterSecureStorage();
+    String memes = await storage.read(key: "memes");
 
-          new MaterialPageRoute(builder: (BuildContext context) => new app(memes: '1')));
-    }
-    else
-      {
-        Navigator.of(context).pushReplacement(
-
-            new MaterialPageRoute(builder: (BuildContext context) => new app(memes: memes)));
-      }
-
+    Navigator.of(context).pushReplacement(new MaterialPageRoute(
+        builder: (BuildContext context) => new TabHandler(memes: memes)));
   }
 
   @override
@@ -145,37 +139,32 @@ class _dummyState extends State<dummy> {
   }
 }
 
-class dummy1 extends StatefulWidget {
+class LoginActivity extends StatefulWidget {
   @override
-  _dummy1State createState() => new _dummy1State();
+  _LoginActivityState createState() => new _LoginActivityState();
 }
 
-class _dummy1State extends State<dummy1> {
-  FlutterSecureStorage storage= FlutterSecureStorage();
+class _LoginActivityState extends State<LoginActivity> {
+  FlutterSecureStorage storage = FlutterSecureStorage();
 
   void initState() {
     // TODO: implement initState
     super.initState();
-    startTime();
+    sleepForSplashScreen();
   }
 
-  startTime() async {
+  sleepForSplashScreen() async {
     var _duration = new Duration(seconds: 1);
     return new Timer(_duration, () => gotoLogin(context));
   }
 
   gotoLogin(BuildContext context) async {
-    String memes=await storage.read(key: "memes");
+    String memes = await storage.read(key: "memes");
 
-    if(memes==null)
-    {
-      await storage.write(key: 'memes', value: "1");
-      memes='1';
-
-    }
-    Navigator.of(context).pushReplacement(
-        new MaterialPageRoute(builder: (BuildContext context) => new Login(memes: memes,)
-        ));
+    Navigator.of(context).pushReplacement(new MaterialPageRoute(
+        builder: (BuildContext context) => new Login(
+              memes: memes,
+            )));
   }
 
   @override
@@ -183,6 +172,3 @@ class _dummy1State extends State<dummy1> {
     return new Container();
   }
 }
-
-
-

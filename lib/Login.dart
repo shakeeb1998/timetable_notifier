@@ -1,54 +1,50 @@
-import "dart:convert";
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import "package:http/http.dart" as http;
 import 'package:timetable_notifier/functions.dart';
 import 'TabHandler.dart';
 
 class Login extends StatelessWidget {
- String memes="";
+  String memes = "";
   Login({this.memes});
   @override
   Widget build(BuildContext context) {
-    //print("shakku $memes");
     return MaterialApp(
       home: new Scaffold(
-        body: new Login1(memes: memes,),
+        body: new LoginStateful(
+          memes: memes,
+        ),
       ),
     );
   }
 }
 
-class Login1 extends StatefulWidget {
-  String memes="";
-  Login1({this.memes});
+class LoginStateful extends StatefulWidget {
+  String memes = "";
+  LoginStateful({this.memes});
   @override
-  _Login1State createState() => _Login1State(memes: memes);
+  _LoginState createState() => _LoginState(memes: memes);
 }
 
-class _Login1State extends State<Login1> {
+class _LoginState extends State<LoginStateful> {
   bool progressDialogStatus = false;
-  String memes='';
-  _Login1State({this.memes});
+  String memes = '';
+  _LoginState({this.memes});
   FlutterSecureStorage storage = new FlutterSecureStorage();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-  BuildContext context1;
-  GlobalKey key = GlobalKey();
-  TextEditingController controller = new TextEditingController(text: 'k164060@nu.edu.pk');
+  BuildContext context;
+  TextEditingController controller =
+      new TextEditingController(text: 'k164060@nu.edu.pk');
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
-    controller.addListener(() => listener());
   }
 
   @override
   Widget build(BuildContext context) {
-    context1 = context;
+    this.context = context;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -64,13 +60,10 @@ class _Login1State extends State<Login1> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: new TextField(
-
             controller: controller,
             decoration: InputDecoration(
-
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                hintText: "---@---.com",
                 icon: Icon(Icons.people)),
           ),
         ),
@@ -78,7 +71,14 @@ class _Login1State extends State<Login1> {
           padding: const EdgeInsets.all(8.0),
           child: new RaisedButton(
             onPressed: () => submit(),
-            child: (!progressDialogStatus) ? new Text("Submit") : new Padding(padding: EdgeInsets.all(2.0),child: new CircularProgressIndicator(strokeWidth: 1.0,),),
+            child: (!progressDialogStatus)
+                ? new Text("Submit")
+                : new Padding(
+                    padding: EdgeInsets.all(2.0),
+                    child: new CircularProgressIndicator(
+                      strokeWidth: 1.0,
+                    ),
+                  ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10.0)),
             ),
@@ -88,67 +88,34 @@ class _Login1State extends State<Login1> {
     );
   }
 
-  listener() {}
   submit() async {
     setState(() {
       progressDialogStatus = true;
     });
+
     String email = controller.text;
-    if (!isValidEmail(email)) {
-      Scaffold
-          .of(context1)
-          .showSnackBar(new SnackBar(content: new Text("Invalid Email Address")));
-      setState(() {
-        progressDialogStatus = false;
-      });
-    } else if (! await isInternetWorking()) {
-      Scaffold
-          .of(context1)
-          .showSnackBar(new SnackBar(content: new Text("Needs Internet Connectivity")));
-      setState(() {
-        progressDialogStatus = false;
-      });
-    } else {
-      try {
-        print('fetching');
-        final response = await http.get(
-            "https://tt.saadismail.net/api/fetch.php?email=\"EMAIL_HERE\"".replaceAll("EMAIL_HERE", email));
-        var responseJson = json.decode(response.body.toString());
-        print('fetched');
 
-        if (responseJson['success'] == null || responseJson['success'] == 0) {
-          Scaffold
-              .of(context1)
-              .showSnackBar(new SnackBar(content: new Text("Invalid User")));
-          setState(() {
-            progressDialogStatus = false;
-          });
-        } else {
-          print('writing');
-          String fStatus=await storage.read(key: "friendStatus");
+    bool fetchSuccess = await fetchTimetable(email, context);
+    print("fetch: " + fetchSuccess.toString());
 
-          if(fStatus==null)
-          {
-            await storage.write(key: 'friendStatus', value: '0');
-          }
+    if (fetchSuccess) {
+      String friendStatus = await storage.read(key: "friendStatus");
 
-          await storage.write(key: 'status', value: '1');
-          await storage.write(key: 'timetable', value:response.body.toString() );
-          scheduleNotification();
-          print(responseJson);
-          Navigator.of(context).pushReplacement(
-
-              new MaterialPageRoute(builder: (BuildContext context) => new app(memes: memes,)));
-        }
-      } catch (e) {
-        print(e);
-        Scaffold
-            .of(context1)
-            .showSnackBar(new SnackBar(content: new Text("Could not fetch timetable")));
-        setState(() {
-          progressDialogStatus = false;
-        });
+      if (friendStatus == null) {
+        await storage.write(key: 'friendStatus', value: '0');
       }
+
+      await storage.write(key: 'mainEmail', value: email);
+      scheduleNotification();
+      Navigator.of(context).pushReplacement(new MaterialPageRoute(
+          builder: (BuildContext context) => new TabHandler(
+                memes: memes,
+              )));
+    } else {
+      await storage.delete(key: 'mainEmail');
+      setState(() {
+        progressDialogStatus = false;
+      });
     }
   }
 }
