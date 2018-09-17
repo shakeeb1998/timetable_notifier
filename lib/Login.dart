@@ -94,10 +94,7 @@ class _LoginState extends State<LoginStateful> {
     });
 
     String email = controller.text;
-
     bool fetchSuccess = await fetchTimetable(email, context);
-    print("fetch: " + fetchSuccess.toString());
-
     if (fetchSuccess) {
       String friendStatus = await storage.read(key: "friendStatus");
 
