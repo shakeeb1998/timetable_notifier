@@ -96,10 +96,10 @@ class _LoginState extends State<LoginStateful> {
     String email = controller.text;
     bool fetchSuccess = await fetchTimetable(email, context);
     if (fetchSuccess) {
-      String friendStatus = await storage.read(key: "friendStatus");
+      String friendsList = await storage.read(key: "friendsList");
 
-      if (friendStatus == null) {
-        await storage.write(key: 'friendStatus', value: '0');
+      if (friendsList == null) {
+        await storage.write(key: 'friendsList', value: '[]'); // Initialize with blank List
       }
 
       await storage.write(key: 'mainEmail', value: email);

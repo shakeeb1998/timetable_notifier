@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:timetable_notifier/User.dart';
 import 'package:timetable_notifier/functions.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -15,9 +16,7 @@ class friendFinder extends StatelessWidget {
 
 class FindFriend extends StatefulWidget {
   BuildContext context1;
-  FindFriend({this.context1}) {
-    ;
-  }
+  FindFriend({this.context1});
 
   @override
   _FindFriendState createState() => _FindFriendState(context1: context1);
@@ -26,13 +25,10 @@ class FindFriend extends StatefulWidget {
 class _FindFriendState extends State<FindFriend> {
   FlutterSecureStorage storage = new FlutterSecureStorage();
   BuildContext context1;
-  // TextEditingController controller= new TextEditingController(text: '@nu.edu.pk');
-
   _FindFriendState({this.context1});
 
   @override
   Widget build(BuildContext context) {
-    // context1=context;
 
     return new Scaffold(
       appBar: new AppBar(
@@ -51,11 +47,12 @@ class _FindFriendState extends State<FindFriend> {
                   ),
                 ),
                 new FutureBuilder(
-                    future: storage.read(key: 'friendStatus'),
+                    future: storage.read(key: 'friendsList'),
+//                    future: storage.read(key: 'friendStatus'),
                     builder: (context, AsyncSnapshot<String> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.data == '0') {
-                          print(snapshot.data);
+                        List friendsList = json.decode(snapshot.data);
+                        if (friendsList.length == 0) {
                           return
                               // new SizedBox(height: 100.0,),
                               Center(child: new Text('Add some friends'));
@@ -120,30 +117,22 @@ class _SearchBarState extends State<SearchBar> {
   }
 
   submit() async {
-    print('in submit');
     String email = controller.text;
-    print(email);
     FlutterSecureStorage storage = new FlutterSecureStorage();
 
     String currentRecord = await storage.read(key: email);
-    bool toIncrement = (currentRecord == null);
+    bool isNewFriend = (currentRecord == null); // Check if the new friend or old
+
     bool fetchSuccess = await fetchTimetable(email, context);
     if (fetchSuccess) {
       String response = await storage.read(key: email);
-      var responseJson = json.decode(response);
-      print(responseJson);
 
-      if (toIncrement) {
-        print('new id');
-        String st = await storage.read(key: 'friendStatus');
-        int friendsCount = int.parse(st);
-        print(friendsCount);
-        friendsCount++;
-        await storage.write(key: "friendStatus", value: friendsCount.toString());
+      if (isNewFriend) {
+        List friendsList = json.decode(await storage.read(key: 'friendsList'));
+        friendsList.add(response);
+        storage.write(key: 'friendsList', value: json.encode(friendsList));
       }
 
-      Map mapper = (await (storage.readAll()));
-      print(mapper.keys.toList());
       Navigator.pop(context1, email);
     }
   }
@@ -159,33 +148,24 @@ class list extends StatefulWidget {
 class _listState extends State<list> {
   FlutterSecureStorage storage = new FlutterSecureStorage();
   BuildContext context1;
-  _listState({this.context1}) {
-    print('nav state');
-    print(Navigator.canPop(context1));
-  }
+  _listState({this.context1});
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: storage.readAll(),
-      builder: (context, AsyncSnapshot<Map<String, String>> snapshot) {
+      future: storage.read(key: 'friendsList'),
+      builder: (context, AsyncSnapshot<String> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          snapshot.data.remove('status');
-          snapshot.data.remove('mainEmail');
-          snapshot.data.remove('friends');
-          snapshot.data.remove('memes');
-          int x = int.parse(snapshot.data["friendStatus"]);
-          snapshot.data.remove('friendStatus');
+          List friendsList = json.decode(snapshot.data);
 
           return new ListView.builder(
               shrinkWrap: true,
-              itemCount: x,
+              itemCount: friendsList.length,
               itemBuilder: (context, index) {
-                print(snapshot.data.keys.toList()[index]);
+                User friend = new User.fromJson(json.decode(friendsList[index]));
                 return new ListTile(
-                  onTap: () => friendsTable(json.decode(snapshot
-                      .data[snapshot.data.keys.toList()[index].toString()])),
-                  title: new Text(jsonDecode(snapshot.data[
-                      snapshot.data.keys.toList()[index].toString()])['name']),
+                  onTap: () => friendsTable(friend.email),
+                  title: new Text(friend.name),
                 );
               });
         } else {
@@ -195,9 +175,7 @@ class _listState extends State<list> {
     );
   }
 
-  friendsTable(var timeTable) {
-    print('friend table');
-    String email = timeTable['email'];
+  friendsTable(String email) {
     Navigator.pop(context1, email);
   }
 }

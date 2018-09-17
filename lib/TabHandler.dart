@@ -40,6 +40,7 @@ class _TabHandlerState extends State<TabHandlerStateful> with SingleTickerProvid
   String currTable = 'mainEmail';
   var timeTable;
   TabController _tabController;
+  int tabToShow;
   String photo1 =
       'https://img00.deviantart.net/35f0/i/2015/018/2/6/low_poly_landscape__the_river_cut_by_bv_designs-d8eib00.jpg';
   String photo2 =
@@ -57,7 +58,7 @@ class _TabHandlerState extends State<TabHandlerStateful> with SingleTickerProvid
 
     SwitchVal = (memes == '1') ? true : false;
 
-    int tabToShow = (DateTime.now().weekday - 1);
+    tabToShow = (DateTime.now().weekday - 1);
     tabToShow = (tabToShow >= 0 && tabToShow <= 4) ? tabToShow : 0;
 
     _tabController =
@@ -76,6 +77,7 @@ class _TabHandlerState extends State<TabHandlerStateful> with SingleTickerProvid
     if (currTable != 'mainEmail') {
       setState(() {
         currTable = 'mainEmail';
+        _tabController.animateTo(tabToShow);
       });
     }
   }
@@ -88,18 +90,19 @@ class _TabHandlerState extends State<TabHandlerStateful> with SingleTickerProvid
     if (val != null) {
       setState(() {
         currTable = val;
+        _tabController.animateTo(tabToShow);
       });
     }
   }
 
   fetch() async {
     String email = timeTable['email'].toString();
-    print(email);
     bool fetchSuccess = await fetchTimetable(email, context);
     if (fetchSuccess) {
       var responseJson = json.decode(await storage.read(key: email));
       setState(() {
         timeTable = responseJson;
+        _tabController.animateTo(tabToShow);
       });
 
       Navigator.of(context).pop();
@@ -114,8 +117,6 @@ class _TabHandlerState extends State<TabHandlerStateful> with SingleTickerProvid
             future: _getMainEmailTimetable(),
             builder: (context, AsyncSnapshot<String> snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                print("switch is $memes");
-                print(snapshot.data);
                 var timetableJson = json.decode(snapshot.data);
                 return new ListView(
                   children: <Widget>[
@@ -295,18 +296,6 @@ class _CarderState extends State<Carder> {
 
   List day;
   _CarderState({this.day});
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    _scrollController.addListener(() => scrollToView());
-  }
-
-  scrollToView() {
-    print('scroller');
-    print(_scrollController.position);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -471,7 +460,6 @@ class _CarderState extends State<Carder> {
 
 class FlexSpace extends StatefulWidget {
   TabController tabController;
-  String status;
   var memeState;
 
   FlexSpace({this.tabController, this.hieght, this.memeState});
@@ -479,7 +467,7 @@ class FlexSpace extends StatefulWidget {
   //_FlexSpaceState flex=new _FlexSpaceState(tabController: tabController,hieght: hieght,status:status);
   @override
   _FlexSpaceState createState() => _FlexSpaceState(
-      tabController: tabController, hieght: hieght, memeStatus: memeState);
+      tabController: tabController, height: hieght, memeStatus: memeState);
 }
 
 class _FlexSpaceState extends State<FlexSpace> {
@@ -487,8 +475,7 @@ class _FlexSpaceState extends State<FlexSpace> {
   CachedNetworkImageProvider image1;
   CachedNetworkImageProvider image2;
   CachedNetworkImageProvider image3;
-  double hieght;
-  String status;
+  double height;
   ValueNotifier memeStatus;
   FlutterSecureStorage storage = FlutterSecureStorage();
   TabController tabController;
@@ -498,23 +485,20 @@ class _FlexSpaceState extends State<FlexSpace> {
       'https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350';
   String photo3 =
       'http://techblogcorner.com/wp-content/uploads/2014/09/jpeg.jpg';
-  _FlexSpaceState({this.tabController, this.hieght, this.memeStatus}) {
-    print('STatus');
+  _FlexSpaceState({this.tabController, this.height, this.memeStatus}) {
   }
 
   @override
   void initState() {
     memeStatus.addListener(() async {
-      print('toggling');
       String st = await storage.read(key: 'memes');
-      print('value for st $st');
       if (st == '1') {
         setState(() {
-          hieght = 200.0;
+          height = 200.0;
         });
       } else {
         setState(() {
-          hieght = 0.0;
+          height = 0.0;
         });
       }
     });
@@ -535,10 +519,9 @@ class _FlexSpaceState extends State<FlexSpace> {
 
   @override
   Widget build(BuildContext context) {
-    print("height is $hieght");
     return SliverAppBar(
       title: new Text("Timetable Notifier"),
-      expandedHeight: hieght,
+      expandedHeight: height,
       floating: false,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
@@ -554,8 +537,6 @@ class _FlexSpaceState extends State<FlexSpace> {
   }
 
   photoChanger() {
-    print("changing photoindex is");
-    print(tabController.index);
     setState(() {
       if (tabController.index == 3) {
         tabImage = image2;
@@ -592,7 +573,6 @@ class _SwitcherState extends State<Switcher> {
 
   @override
   Widget build(BuildContext context) {
-    print('val is $val');
     return new FutureBuilder(
         future: storage.read(key: 'memes'),
         builder: (context, AsyncSnapshot<String> snapshot) {
@@ -616,14 +596,12 @@ class _SwitcherState extends State<Switcher> {
 
   Future<bool> memesf(bool a) async {
     String val1;
-    print('inFunc $a');
     if (a == true) {
       val1 = '1';
       await storage.write(key: 'memes', value: val1);
       //memeState.value('0');
       memeState.value += 1;
       setState(() {
-        print('changing');
         val = a;
       });
       //  memeState.notifyListeners();
@@ -634,7 +612,6 @@ class _SwitcherState extends State<Switcher> {
       memeState.value += 1;
       //  memeState.notifyListeners();
       setState(() {
-        print('changing1');
         val = a;
       });
     }
