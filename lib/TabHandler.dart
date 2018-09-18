@@ -192,12 +192,12 @@ class _TabHandlerState extends State<TabHandlerStateful> with SingleTickerProvid
                   ? FlexSpace(
                       tabController: _tabController,
                       memeState: memeState,
-                      hieght: 200.0,
+                      height: 200.0,
                     )
                   : FlexSpace(
                       tabController: _tabController,
                       memeState: memeState,
-                      hieght: 0.0,
+                      height: 0.0,
                     ),
             ),
             SliverPersistentHeader(
@@ -462,12 +462,12 @@ class FlexSpace extends StatefulWidget {
   TabController tabController;
   var memeState;
 
-  FlexSpace({this.tabController, this.hieght, this.memeState});
-  double hieght;
+  FlexSpace({this.tabController, this.height, this.memeState});
+  double height;
   //_FlexSpaceState flex=new _FlexSpaceState(tabController: tabController,hieght: hieght,status:status);
   @override
   _FlexSpaceState createState() => _FlexSpaceState(
-      tabController: tabController, height: hieght, memeStatus: memeState);
+      tabController: tabController, height: height, memeStatus: memeState);
 }
 
 class _FlexSpaceState extends State<FlexSpace> {
@@ -577,44 +577,25 @@ class _SwitcherState extends State<Switcher> {
         future: storage.read(key: 'memes'),
         builder: (context, AsyncSnapshot<String> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.data == '1') {
-              return Switch(
-                onChanged: (a) => memesf(a),
-                value: true,
-              );
-            } else {
-              return Switch(
-                onChanged: (a) => memesf(a),
-                value: false,
-              );
-            }
+            bool isMemesEnabled = (snapshot.data == '1') ? true : false;
+
+            return Switch (
+              onChanged: (a) => updateMemeState(a),
+              value: isMemesEnabled,
+            );
+
           } else {
             return new Container();
           }
         });
   }
 
-  Future<bool> memesf(bool a) async {
-    String val1;
-    if (a == true) {
-      val1 = '1';
-      await storage.write(key: 'memes', value: val1);
-      //memeState.value('0');
-      memeState.value += 1;
-      setState(() {
-        val = a;
-      });
-      //  memeState.notifyListeners();
-    } else {
-      val1 = '0';
-      await storage.write(key: 'memes', value: val1);
-      //memeState.value('1');
-      memeState.value += 1;
-      //  memeState.notifyListeners();
-      setState(() {
-        val = a;
-      });
-    }
+  Future<bool> updateMemeState(bool a) async {
+    await storage.write(key: 'memes', value: (a) ? '1' : '0');
+    memeState.value += 1;
+    setState(() {
+      val = a;
+    });
   }
 }
 
