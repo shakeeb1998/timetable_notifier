@@ -9,12 +9,11 @@ class Login extends StatelessWidget {
   Login({this.memes});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: new Scaffold(
+    return new Scaffold(
         body: new LoginStateful(
           memes: memes,
         ),
-      ),
+
     );
   }
 }

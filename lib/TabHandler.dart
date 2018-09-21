@@ -16,10 +16,9 @@ class TabHandler extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: TabHandlerStateful(
+    return TabHandlerStateful(
         memes: memes,
-      ),
+
     );
   }
 }

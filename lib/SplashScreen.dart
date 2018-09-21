@@ -106,9 +106,8 @@ class SplashScreenStateful extends StatefulWidget {
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: new SplashScreenStateful(),
-    );
+    return  new SplashScreenStateful()
+    ;
   }
 }
 

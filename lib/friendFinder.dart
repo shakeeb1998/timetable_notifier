@@ -8,9 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class friendFinder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: new FindFriend(context1: context),
-    );
+    return new FindFriend(context1: context);
   }
 }
 
@@ -103,7 +101,8 @@ class _SearchBarState extends State<SearchBar> {
           ),
         ),
         InkWell(
-            highlightColor: Colors.red,
+            splashColor: Colors.lightBlueAccent,
+            highlightColor: Colors.lightBlueAccent,
             borderRadius: BorderRadius.all(Radius.circular(50.0)),
             radius: 12.0,
             //behavior: HitTestBehavior.opaque,
