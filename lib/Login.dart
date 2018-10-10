@@ -28,20 +28,11 @@ class _LoginState extends State<LoginStateful> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   BuildContext context;
-
   TextEditingController textEditingController =
       new TextEditingController();
 
   @override
   void initState() {
-    loadAsyncData().then((result) {
-      // If we need to rebuild the widget with the resulting data,
-      // make sure to use `setState`
-      setState(() {
-        _result = result;
-      });
-    });
-
     super.initState();
   }
 
