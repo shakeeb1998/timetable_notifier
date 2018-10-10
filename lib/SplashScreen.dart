@@ -31,16 +31,6 @@ class _SplashScreenState extends State<SplashScreenStateful>
         // custom code here
       }
     });
-
-    initializeMeme();
-  }
-
-  initializeMeme() async {
-    FlutterSecureStorage storage = new FlutterSecureStorage();
-    String memes = await storage.read(key: "memes");
-    if (memes == null) {
-      await storage.write(key: 'memes', value: "1");
-    }
   }
 
   @override
@@ -126,10 +116,9 @@ class _TabHandlerActivityState extends State<TabHandlerActivity> {
 
   gotoOrder(BuildContext context) async {
     FlutterSecureStorage storage = new FlutterSecureStorage();
-    String memes = await storage.read(key: "memes");
 
     Navigator.of(context).pushReplacement(new MaterialPageRoute(
-        builder: (BuildContext context) => new TabHandler(memes: memes)));
+        builder: (BuildContext context) => new TabHandler()));
   }
 
   @override
@@ -158,12 +147,8 @@ class _LoginActivityState extends State<LoginActivity> {
   }
 
   gotoLogin(BuildContext context) async {
-    String memes = await storage.read(key: "memes");
-
     Navigator.of(context).pushReplacement(new MaterialPageRoute(
-        builder: (BuildContext context) => new Login(
-              memes: memes,
-            )));
+        builder: (BuildContext context) => new Login()));
   }
 
   @override

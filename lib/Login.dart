@@ -5,39 +5,43 @@ import 'package:timetable_notifier/functions.dart';
 import 'TabHandler.dart';
 
 class Login extends StatelessWidget {
-  String memes = "";
-  Login({this.memes});
+  Login();
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        body: new LoginStateful(
-          memes: memes,
-        ),
+        body: new LoginStateful(),
 
     );
   }
 }
 
 class LoginStateful extends StatefulWidget {
-  String memes = "";
-  LoginStateful({this.memes});
+  LoginStateful();
   @override
-  _LoginState createState() => _LoginState(memes: memes);
+  _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<LoginStateful> {
   bool progressDialogStatus = false;
-  String memes = '';
-  _LoginState({this.memes});
+  _LoginState();
   FlutterSecureStorage storage = new FlutterSecureStorage();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   BuildContext context;
-  TextEditingController controller =
-      new TextEditingController(text: 'k164060@nu.edu.pk');
+
+  TextEditingController textEditingController =
+      new TextEditingController();
 
   @override
   void initState() {
+    loadAsyncData().then((result) {
+      // If we need to rebuild the widget with the resulting data,
+      // make sure to use `setState`
+      setState(() {
+        _result = result;
+      });
+    });
+
     super.initState();
   }
 
@@ -59,7 +63,7 @@ class _LoginState extends State<LoginStateful> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: new TextField(
-            controller: controller,
+            controller: textEditingController,
             decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10.0))),
@@ -92,7 +96,7 @@ class _LoginState extends State<LoginStateful> {
       progressDialogStatus = true;
     });
 
-    String email = controller.text;
+    String email = textEditingController.text;
     bool fetchSuccess = await fetchTimetable(email, context);
     if (fetchSuccess) {
       String friendsList = await storage.read(key: "friendsList");
@@ -104,9 +108,7 @@ class _LoginState extends State<LoginStateful> {
       await storage.write(key: 'mainEmail', value: email);
       scheduleNotification();
       Navigator.of(context).pushReplacement(new MaterialPageRoute(
-          builder: (BuildContext context) => new TabHandler(
-                memes: memes,
-              )));
+          builder: (BuildContext context) => new TabHandler()));
     } else {
       await storage.delete(key: 'mainEmail');
       setState(() {
